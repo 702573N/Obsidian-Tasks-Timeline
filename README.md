@@ -1,7 +1,7 @@
 # Taskido - the Obsidian-Tasks-Timeline
 #### A custom view build with [Obsidian-Dataview](https://github.com/blacksmithgu/obsidian-dataview) to display tasks from [Obsidian-Tasks](https://github.com/obsidian-tasks-group/obsidian-tasks) and from your daily notes in a highly customisable timeline
 
-![Taskido](https://user-images.githubusercontent.com/59178587/210225661-ffa9a2ea-c3e6-45e5-b741-e669134d092b.png)
+![New](https://user-images.githubusercontent.com/59178587/210228017-9fab8958-17d5-477f-b05f-e14bef02c3ad.png)
 
 - All tasks from Obsidian-Task-Plugin and your daily notes in a clean, simple timeline view
 - All notes can pinned directly into your timeline using creation date and the starring functionality in Obsidian
