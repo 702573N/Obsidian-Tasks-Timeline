@@ -260,7 +260,7 @@
 .taskido.todayFocus .todayHeader,
 .taskido.todoFocus .counter#todo,
 .taskido.overdueFocus .counter#overdue,
-.taskido.unplannedFocus .counter#process {
+.taskido.unplannedFocus .counter#unplanned {
 	color: var(--icon-color-active);
 }
 .taskido.noMotivation .motivation,
