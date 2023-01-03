@@ -25,7 +25,7 @@
     ```
     ````
     
-    If you paste the main files (js/css) into another folder then "tasksCalendar", you have to replace the name between the first quotation marks.
+    If you paste the main files (js/css) into another folder then "Taskido", you have to replace the name between the first quotation marks.
  
  4. There are more parameters to customize the look and feel of Taskido but there aren't necessary.
 
