@@ -121,7 +121,7 @@ With the sort paramter you can set your personal sort algorithm to sort your tas
 
 ---
 
-## Note colors and icon
+## Note colors
 In each note file you can set a custom "color" to show up in the calendar. You only need to add the following metadata to the first line of your note.
 
 <img width="570" alt="Bildschirm­foto 2023-01-02 um 12 17 47" src="https://user-images.githubusercontent.com/59178587/210224314-5a54180f-1c63-490c-8c37-aaff7bb4d707.png">
