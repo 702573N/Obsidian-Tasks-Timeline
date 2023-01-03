@@ -238,7 +238,7 @@ function getTimeline(tasks) {
 			var dailynoteCount = tasksFiltered.filter(t=>t.happens["dailynote"]).length;
 			var dailytaskCount = tasksFiltered.filter(t=>t.happens["dailytask"]).length;
 			var processCount = tasksFiltered.filter(t=>t.happens["process"]).length;
-			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["process"] && !t.happens["start"]).length;
+			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["process"] && !t.happens["start"] && !t.happens["overdue"]).length;
 			var notesCount = timelineNotes.length;
 			var unplannedCount = tasks.filter(t=>t.happens["unplanned"]).length;
 			
