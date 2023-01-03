@@ -3,14 +3,11 @@
 
 <p align="center"><img width="400" alt="Semi_Transparent" src="https://user-images.githubusercontent.com/59178587/210307060-5ed916ee-819d-46b1-9a5e-efdd15728957.png"></p>
 
-- All tasks from Obsidian-Task-Plugin and your daily notes in a clean, simple timeline view
-- All notes can pinned directly into your timeline using creation date and the starring functionality in Obsidian
-- To Do, Overdue, Process box counters to focus your tasks
-- Quick add a task to your todays daily note, only one step away
-- Give your life color with metadata in your notes and so in your personal timeline
-- Tidy timeline without being overwhelmed by completed tasks but still showing what you have done today
-- Focus yourself in today's work and block out everything from yesterday and tomorrow
-- Custom color for all your tags
+- All your tasks in a clean and simple timeline view
+- Pin all your important notes directly into your timeline
+- Focus today, to do, overdue or processing tasks
+- Quick add new tasks to your daily note
+- Custom colors for all your tags and notes
 
 ---
 
