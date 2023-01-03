@@ -260,7 +260,7 @@
 .taskido.todayFocus .todayHeader,
 .taskido.todoFocus .counter#todo,
 .taskido.overdueFocus .counter#overdue,
-.taskido.processFocus .counter#process {
+.taskido.unplannedFocus .counter#process {
 	color: var(--icon-color-active);
 }
 .taskido.noMotivation .motivation,
@@ -277,4 +277,4 @@
 .taskido.todoFocus .details.today .task.scheduled,
 .taskido.todoFocus .details.today .task.dailytask,
 .taskido.overdueFocus .task.overdue,
-.taskido.processFocus .task.process { background: var(--background-modifier-active-hover); }
+.taskido.unplannedFocus .task.unplanned { background: var(--background-modifier-active-hover); }
