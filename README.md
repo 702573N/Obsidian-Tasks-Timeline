@@ -132,7 +132,7 @@ The color should be hex in quotation marks to work properly.
 
 ---
 
-## Custom tag color
+## Tag colors
 You can set a custom color for all your tags displayed inside Taskido. Here I'm using the nesting tag feature to implement this. The first tag (root-node) is used as hex-color and the second tag after the slash is your main tag:
 
     `#0a84ff/demo`
