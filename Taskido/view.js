@@ -1,4 +1,4 @@
-let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, starred, options} = input;
+let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, starred, overdueTasksToday, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -22,18 +22,14 @@ var dailyNoteRegEx = momentToRegex(dailyNoteFormat)
 const rootNode = dv.el("div", "", {cls: "taskido "+options, attr: {id: "taskido"+tid}});
 
 // Icons
-// var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
 var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
 var dueIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
 var scheduledIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>';
 var startIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg>';
 var overdueIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
-// var processIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>';
 var processIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h13l4-3.5L18 6Z"></path><path d="M12 13v9"></path><path d="M12 2v4"></path></svg>';
 var dailynoteIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
-// var dailytaskIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>';
-var dailytaskIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>';
-// var addIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>';
+var unplannedIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>';
 var addIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>';
 var tagIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path><path d="M7 7h.01"></path></svg>';
 var repeatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>';
@@ -54,19 +50,29 @@ function getMeta(tasks) {
 		var dailyTaskMatch = taskText.match(/(\d{4}\-\d{2}\-\d{2})/);
 		if (dailyNoteMatch && tasks[i].completed == false) {
 			if(!dailyTaskMatch) {
-				tasks[i].dailytask = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
-				happens["dailytask"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
 				timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
+				happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
+				// if ( moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") < moment().format("YYYY-MM-DD") ) {
+				// 	happens["overdue"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
+				// 	happens["dailytask"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
+				// } else {
+				// 	happens["dailytask"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
+				// };
 			};
 		};
 		var dueMatch = taskText.match(/\📅\W(\d{4}\-\d{2}\-\d{2})/);
 		if (dueMatch && tasks[i].completed == false) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
-			timelineDates.push(dueMatch[1]);
 			if ( dueMatch[1] < moment().format("YYYY-MM-DD") ) {
-				happens["overdue"] = dueMatch[1];
+				if (overdueTasksToday == true) {
+					happens["overdue"] = moment().format("YYYY-MM-DD");
+				} else {
+					happens["overdue"] = dueMatch[1];
+					timelineDates.push(dueMatch[1]);
+				};
 			} else {
 				happens["due"] = dueMatch[1];
+				timelineDates.push(dueMatch[1]);
 			};
 		} else if (dueMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
@@ -230,35 +236,43 @@ function getTimeline(tasks) {
 			var scheduledCount = tasksFiltered.filter(t=>t.happens["scheduled"]).length;
 			var doneCount = tasksFiltered.filter(t=>t.happens["done"]).length;
 			var dailynoteCount = tasksFiltered.filter(t=>t.happens["dailynote"]).length;
+			var dailytaskCount = tasksFiltered.filter(t=>t.happens["dailytask"]).length;
 			var processCount = tasksFiltered.filter(t=>t.happens["process"]).length;
 			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["process"] && !t.happens["start"]).length;
 			var notesCount = timelineNotes.length;
+			var unplannedCount = tasks.filter(t=>t.happens["unplanned"]).length;
 			
 			if (todoCount == 0 && processCount == 0 && overdueCount == 0) {
-				var motivation = "☕️ Wow, looks like an empty day.<br>Relax!"
+				var motivation = "☕️ Wow, looks like an empty day. Relax!"
+			} else if (todoCount == 0 && doneCount > 0 && overdueCount == 0) {
+				var motivation = "☑️ Success usually comes to those who are too busy looking for it."
+			}else if (todoCount == 0 && doneCount > 0 && overdueCount > 0) {
+				var motivation = "🚩 Seems like you now have time to take care of your overdue tasks."
 			} else if (todoCount > 0 && todoCount < 4 && overdueCount < 3) {
-				var motivation = "👍 Only " + todoCount + " task/s for today.<br>You can do this easily!"
+				var motivation = "👍 Only " + todoCount + " task/s for today. You can do this easily!"
 			} else if (todoCount > 0 && todoCount < 4 && overdueCount >= 3 && overdueCount < 5) {
-				var motivation = "😀 Only " + todoCount + " task/s for today.<br>But keep an eye on the overdue tasks!"
+				var motivation = "😀 Only " + todoCount + " task/s for today. But keep an eye on the overdue tasks!"
 			} else if (todoCount >= 3 && overdueCount < 3) {
-				var motivation = "🐥 Few things to do.<br>The faster you start, the faster you finish."
+				var motivation = "🐥 Few things to do. The faster you start, the faster you finish."
 			} else if (todoCount >= 10 && overdueCount < 3) {
-				var motivation = "⏰ Use your time wisely,<br>you have a lot to do today!"
+				var motivation = "⏰ Use your time wisely, you have a lot to do today!"
 			} else if (processCount >= 6) {
-				var motivation = "🥯 You are working on so many tasks at once.<br>Don't forget the break!"
+				var motivation = "🥯 You are working on so many tasks at once. Don't forget the break!"
 			} else if (overdueCount >= 3 && overdueCount < 6) {
-				var motivation = "🐰 Unfortunately, you still have some unfinished tasks.<br>But the situation is not yet dramatic, so cheer up."
+				var motivation = "🐰 Unfortunately, you still have some unfinished tasks. But the situation is not yet dramatic, so cheer up."
 			} else if (overdueCount >= 6  && overdueCount < 10) {
-				var motivation = "👀 Your unfinished tasks could slowly become a problem.<br>Keep the ball rolling!"
+				var motivation = "👀 Your unfinished tasks could slowly become a problem. Keep the ball rolling!"
 			} else if (todoCount >= 8  && overdueCount >= 8) {
-				var motivation = "🚧 Please take care of yourself!<br>Your situation is really tense at the moment.<br>I believe in you."
+				var motivation = "🚧 Please take care of yourself! Your situation is really tense at the moment. I believe in you."
+			} else {
+				var motivation = "💡 Just one small positive thought in the morning can change your whole day."
 			};
 			
 			var todayContent = "<div class='todayHeader'>Today</div>"
 			todayContent += "<div class='counters'>"
 			todayContent += "<div class='counter' id='todo'><div class='count'>" + todoCount + "</div><div class='label'>To Do</div></div>"
 			todayContent += "<div class='counter' id='overdue'><div class='count'>" + overdueCount + "</div><div class='label'>Overdue</div></div>"
-			todayContent += "<div class='counter' id='process'><div class='count'>" + processCount + "</div><div class='label'>Process</div></div>"
+			todayContent += "<div class='counter' id='unplanned'><div class='count'>" + unplannedCount + "</div><div class='label'>Unplanned</div></div>"
 			todayContent += "</div>"
 			todayContent += "<div class='motivation'>" + motivation + "</div>"
 			
