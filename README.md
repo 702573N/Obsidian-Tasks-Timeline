@@ -5,7 +5,7 @@
 
 - All your tasks in a clean and simple timeline view
 - Pin all your important notes directly into your timeline
-- Focus today, to do, overdue or processing tasks
+- Focus today, to do, overdue or unplanned tasks
 - Quick add new tasks to your daily note
 - Custom colors for all your tags and notes
 
@@ -70,7 +70,7 @@ With this options you can hide some elements which they do not need, or which di
 options: "todayFocus"
 options: "todoFocus"
 options: "overdueFocus"
-options: "processFocus"
+options: "unplannedFocus"
 ```
 With this options you can set a default focus after open the timeline.
 
@@ -116,6 +116,12 @@ sort: "t.priority"
 ```
 With the sort paramter you can set your personal sort algorithm to sort your tasks inside a day.
 
+### overdueTasksToday:
+```
+overdueTasksToday: true
+```
+With this parameter you switch the visibility of your overdues tasks on the timeline. By setting this parameter to `true`, your overdue tasks will show up on today. By default this setting is `false`.
+
 ---
 
 ## Note colors
@@ -143,6 +149,7 @@ The tag-autocomplete functionality inside Obsidian makes it possible to quickly 
 ---
 
 ## Focussing
-A small separation give focus on today. Three info boxes (To Do, Overdue, Process) give you all necessary informations to do your best on today. By clicking on each box, your selected tasks get a highlight to keep focus on. By clicking on the "Today" header you can also hide all other days from timeline.
+A small separation give focus on today. Three info boxes (To Do, Overdue, Unplanned
+) give you all necessary informations to do your best on today. By clicking on each box, your selected tasks get a highlight to keep focus on. By clicking on the "Today" header you can also hide all other days from timeline.
 
 <img width="358" alt="Bildschirm­foto 2023-01-02 um 12 04 05" src="https://user-images.githubusercontent.com/59178587/210223039-094b6586-fdb4-4628-b9f7-863034ec2b33.png">
