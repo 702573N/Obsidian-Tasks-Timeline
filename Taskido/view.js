@@ -1,4 +1,4 @@
-let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, starred, overdueTasksToday, options} = input;
+let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, starred, overdueTasksToday, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -10,16 +10,17 @@ if (!options) {options = ""};
 if (!dailyNoteFolder) {dailyNoteFolder = ""} else {dailyNoteFolder = dailyNoteFolder+"/"};
 if (!dailyNoteFormat) {dailyNoteFormat = "YYYY-MM-DD"};
 if (!sort) {sort = "!t.completed && Object.keys(t.happens).find(key => t.happens[key] === timelineDates[i].toString())"};
+if (!counterAction) {counterAction = "Focus"} else { counterAction = counterAction[0].toUpperCase() + counterAction.slice(1);};
 
 // Variables
 var timelineDates = [];
 var timelineNotes = dv.pages().file.filter(f=>f.starred == true && timelineDates.push(moment(f.cday.toString()).format("YYYY-MM-DD")) );
 var tid = (new Date()).getTime();
 var today = moment().format("YYYY-MM-DD");
-var dailyNoteRegEx = momentToRegex(dailyNoteFormat)
+var dailyNoteRegEx = momentToRegex(dailyNoteFormat);
 
 // Set Root
-const rootNode = dv.el("div", "", {cls: "taskido "+options, attr: {id: "taskido"+tid}});
+const rootNode = dv.el("div", "", {cls: "taskido "+options, attr: {id: "taskido"+tid, style: "position:relative;"}});
 
 // Icons
 var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
@@ -150,14 +151,15 @@ function getMeta(tasks) {
 };
 
 function setEvents() {
+	
 	rootNode.querySelectorAll('.counter').forEach(cnt => cnt.addEventListener('click', (() => {
-		var activeFocus = Array.from(rootNode.classList).filter(c=>c.endsWith("Focus") && !c.startsWith("today"));
-		if (activeFocus == cnt.id+"Focus") {
+		var activeFocus = Array.from(rootNode.classList).filter(c=>c.endsWith(counterAction) && !c.startsWith("today"));
+		if (activeFocus == cnt.id+counterAction) {
 			rootNode.classList.remove(activeFocus);
 			return false;
 		};
-		rootNode.classList.remove.apply(rootNode.classList, Array.from(rootNode.classList).filter(c=>c.endsWith("Focus") && !c.startsWith("today")));
-		rootNode.classList.add(cnt.id+"Focus");
+		rootNode.classList.remove.apply(rootNode.classList, Array.from(rootNode.classList).filter(c=>c.endsWith(counterAction) && !c.startsWith("today")));
+		rootNode.classList.add(cnt.id+counterAction);
 	})));
 	rootNode.querySelector('.todayHeader').addEventListener('click', (() => {
 		rootNode.classList.toggle("todayFocus");
@@ -218,6 +220,7 @@ function getTimeline(tasks) {
 		var year = moment(timelineDates[i].toString()).format("YYYY");
 		var detailsCls = "";
 		var content = "";
+		var containedTypes = [];
 		
 		// Add Year Section
 		if (year != lastYear) {
@@ -287,6 +290,7 @@ function getTimeline(tasks) {
 			var info = "";
 			var color = getMetaFromNote(item, "color");
 			var cls = Object.keys(item.happens).find(key => item.happens[key] === timelineDates[i].toString());
+			containedTypes.push(cls);
 			
 			if (item.priorityLabel) {
 				info += "<div class='priority'><div class='icon'>" + priorityIcon + "</div><div class='label'>" + item.priorityLabel + "</div></div>";
@@ -326,6 +330,11 @@ function getTimeline(tasks) {
 		var date = "<div class='dateLine'><div class='date'>" + date + "</div><div class='relative'>" + relative + "</div></div><div class='content'>" + content + "</div>"
 		
 		// Append To Root Node
-		rootNode.querySelector("span").appendChild(dv.el("div", date, {cls: "details " + detailsCls, attr: {"data-year": year}}));
+		rootNode.querySelector("span").appendChild(dv.el("div", date, {cls: "details " + detailsCls, attr: {"data-year": year, "data-types": containedTypes.join(" ")}}));
 	};
 };
+
+function showPopup() {
+	rootNode.querySelector("span").appendChild(dv.el("div", "", {cls: "popup"}));
+	rootNode.querySelector(".popup").classList.add("show");
+}
