@@ -259,10 +259,11 @@
 /* Classes */
 .taskido.todayFocus .todayHeader,
 .taskido.todoFocus .counter#todo,
+.taskido.todoFilter .counter#todo,
 .taskido.overdueFocus .counter#overdue,
-.taskido.unplannedFocus .counter#unplanned {
-	color: var(--icon-color-active);
-}
+.taskido.overdueFilter .counter#overdue,
+.taskido.unplannedFocus .counter#unplanned,
+.taskido.unplannedFilter .counter#unplanned { color: var(--icon-color-active); }
 .taskido.noMotivation .motivation,
 .taskido.noRepeat .repeat,
 .taskido.noTag .tag,
@@ -278,3 +279,10 @@
 .taskido.todoFocus .details.today .task.dailytask,
 .taskido.overdueFocus .task.overdue,
 .taskido.unplannedFocus .task.unplanned { background: var(--background-modifier-active-hover); }
+/* Filter */
+.taskido.todoFilter .details:not(.today):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
+.taskido.todoFilter .task:not(.due, .scheduled, .overdue) { display: none; }
+.taskido.overdueFilter .details:not(.today):not([data-types*="overdue"]) { display: none; }
+.taskido.overdueFilter .task:not(.overdue) { display: none; }
+.taskido.unplannedFilter .details:not(.today):not([data-types*="unplanned"]) { display: none; }
+.taskido.unplannedFilter .task:not(.unplanned) { display: none; }
