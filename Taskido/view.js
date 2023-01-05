@@ -141,9 +141,15 @@ function getMeta(tasks) {
 		} else {
 			tasks[i].text = tasks[i].text.replaceAll("#task","");
 		};
-		tasks[i].text = tasks[i].text.replaceAll("[[","");
-		tasks[i].text = tasks[i].text.replaceAll("]]","");
-		tasks[i].text = tasks[i].text.replace(/\[.*?\]/gm,"");
+		var innerLinkMatch = tasks[i].text.match(/\[\[(.*?)\]\]/);
+		if (innerLinkMatch) {
+			tasks[i].text = tasks[i].text.replace(innerLinkMatch[0], "<a class='internal-link innerLink' href='" + innerLinkMatch[1] + "'>" + innerLinkMatch[1] + "</a>");
+		};
+		var outerLinkMatch = tasks[i].text.match(/\[([^\]]+)\]\(([^)]+)\)/);
+		if (outerLinkMatch) {
+			tasks[i].text = tasks[i].text.replace(outerLinkMatch[0], "<a class='external-link outerLink' href='" + outerLinkMatch[2] + "'>" + outerLinkMatch[1] + "</a>");
+		};
+		
 		tasks[i].happens = happens;
 	};
 	timelineDates.push(today);
