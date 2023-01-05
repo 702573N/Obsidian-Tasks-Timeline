@@ -11,6 +11,13 @@
 
 ---
 
+## Story
+Many Obsidian and Task Plugin users need to build certain queries using the Dataview Plugin, or with the queries included in the Task Plugin. These queries then allow the user to keep track of certain previously defined tasks. The visual representation of the query result is very plain and rigid, as are the customisation options for the display. The aim of this customised view is to make almost all of the user's tinkered queries redundant with an all-round solution.
+
+Although I initially developed the Obsidian Tasks Calendar, I now work exclusively with the Timeline, as it shows me all the information at any given time without overwhelming me.
+
+---
+
 ## Setup
 1.  Install "Dataview Plugin" from the external plugins
 2.  Create a new folder called "Taskido" or any other name and paste the files "view.js" and "view.css" into it
