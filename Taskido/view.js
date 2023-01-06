@@ -1,4 +1,4 @@
-let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, starred, overdueTasksToday, options} = input;
+let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, starred, overdueTasksToday, dateFormat, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -11,6 +11,7 @@ if (!dailyNoteFolder) {dailyNoteFolder = ""} else {dailyNoteFolder = dailyNoteFo
 if (!dailyNoteFormat) {dailyNoteFormat = "YYYY-MM-DD"};
 if (!sort) {sort = "!t.completed && Object.keys(t.happens).find(key => t.happens[key] === timelineDates[i].toString())"};
 if (!counterAction) {counterAction = "Focus"} else { counterAction = counterAction[0].toUpperCase() + counterAction.slice(1);};
+if (!dateFormat) {dateFormat = "ddd, MMM D"};
 
 // Variables
 var timelineDates = [];
@@ -20,7 +21,7 @@ var today = moment().format("YYYY-MM-DD");
 var dailyNoteRegEx = momentToRegex(dailyNoteFormat);
 
 // Set Root
-const rootNode = dv.el("div", "", {cls: "taskido "+options, attr: {id: "taskido"+tid, style: "position:relative;"}});
+const rootNode = dv.el("div", "", {cls: "taskido "+options, attr: {id: "taskido"+tid}});
 
 // Icons
 var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
@@ -53,12 +54,6 @@ function getMeta(tasks) {
 			if(!dailyTaskMatch) {
 				timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
 				happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
-				// if ( moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") < moment().format("YYYY-MM-DD") ) {
-				// 	happens["overdue"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
-				// 	happens["dailytask"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
-				// } else {
-				// 	happens["dailytask"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
-				// };
 			};
 		};
 		var dueMatch = taskText.match(/\📅\W(\d{4}\-\d{2}\-\d{2})/);
@@ -141,15 +136,13 @@ function getMeta(tasks) {
 		} else {
 			tasks[i].text = tasks[i].text.replaceAll("#task","");
 		};
-		var innerLinkMatch = tasks[i].text.match(/\[\[(.*?)\]\]/);
-		if (innerLinkMatch) {
-			tasks[i].text = tasks[i].text.replace(innerLinkMatch[0], "<a class='internal-link innerLink' href='" + innerLinkMatch[1] + "'>" + innerLinkMatch[1] + "</a>");
+		while (outerLink = /\[([^\]]+)\]\(([^)]+)\)/g.exec(tasks[i].text)) {
+			tasks[i].text = tasks[i].text.replace(outerLink[0], "<a class='external-link outerLink' href='" + outerLink[2] + "'>" + outerLink[1] + "</a>");
 		};
-		var outerLinkMatch = tasks[i].text.match(/\[([^\]]+)\]\(([^)]+)\)/);
-		if (outerLinkMatch) {
-			tasks[i].text = tasks[i].text.replace(outerLinkMatch[0], "<a class='external-link outerLink' href='" + outerLinkMatch[2] + "'>" + outerLinkMatch[1] + "</a>");
+
+		while (innerLink = /\[\[([^\]]+)\]\]/g.exec(tasks[i].text)) {
+			tasks[i].text = tasks[i].text.replace(innerLink[0], "<a class='internal-link innerLink' href='" + innerLink[1] + "'>" + innerLink[1] + "</a>");
 		};
-		
 		tasks[i].happens = happens;
 	};
 	timelineDates.push(today);
@@ -157,7 +150,6 @@ function getMeta(tasks) {
 };
 
 function setEvents() {
-	
 	rootNode.querySelectorAll('.counter').forEach(cnt => cnt.addEventListener('click', (() => {
 		var activeFocus = Array.from(rootNode.classList).filter(c=>c.endsWith(counterAction) && !c.startsWith("today"));
 		if (activeFocus == cnt.id+counterAction) {
@@ -214,7 +206,9 @@ function momentToRegex(momentFormat) {
 };
 
 function getTimeline(tasks) {
+	var yearNode;
 	var lastYear = null;
+	var containedTypesPerYear = [];
 	
 	for (i=0; i<timelineDates.length; i++) {
 		
@@ -222,17 +216,19 @@ function getTimeline(tasks) {
 		var notesFiltered = timelineNotes.filter(n=>moment(n.cday.toString()).format("YYYY-MM-DD") == timelineDates[i]);
 		var tasksFiltered = tasks.filter(t=>Object.values(t.happens).includes(timelineDates[i].toString())).sort(t=> eval(sort));
 		var relative = moment(timelineDates[i].toString()).fromNow();
-		var date = moment(timelineDates[i].toString()).format("ddd, MMM D")
+		var date = moment(timelineDates[i].toString()).format(dateFormat)
 		var year = moment(timelineDates[i].toString()).format("YYYY");
 		var detailsCls = "";
 		var content = "";
-		var containedTypes = [];
+		var containedTypesPerDay = [];
 		
 		// Add Year Section
 		if (year != lastYear) {
 			lastYear = year;
-			cls = moment().format("YYYY") == year ? "current" : "";
-			rootNode.querySelector("span").appendChild(dv.el("div", year, {cls: "year " + cls}));
+			yearNode = dv.el("div", "", {cls: "year", attr: {"data-types": ""}})
+			if (moment().format("YYYY") == year) { yearNode.classList.add("current") };
+			yearNode.innerHTML = year;
+			rootNode.querySelector("span").appendChild(yearNode);
 		};
 		
 		// Add Today Information
@@ -247,7 +243,7 @@ function getTimeline(tasks) {
 			var dailynoteCount = tasksFiltered.filter(t=>t.happens["dailynote"]).length;
 			var dailytaskCount = tasksFiltered.filter(t=>t.happens["dailytask"]).length;
 			var processCount = tasksFiltered.filter(t=>t.happens["process"]).length;
-			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["process"] && !t.happens["start"] && !t.happens["overdue"]).length;
+			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["process"] && !t.happens["start"] && !t.happens["overdue"] && !t.happens["unplanned"]).length;
 			var notesCount = timelineNotes.length;
 			var unplannedCount = tasks.filter(t=>t.happens["unplanned"]).length;
 			
@@ -296,7 +292,8 @@ function getTimeline(tasks) {
 			var info = "";
 			var color = getMetaFromNote(item, "color");
 			var cls = Object.keys(item.happens).find(key => item.happens[key] === timelineDates[i].toString());
-			containedTypes.push(cls);
+			containedTypesPerDay.push(cls);
+			containedTypesPerYear.push(cls);
 			
 			if (item.priorityLabel) {
 				info += "<div class='priority'><div class='icon'>" + priorityIcon + "</div><div class='label'>" + item.priorityLabel + "</div></div>";
@@ -336,11 +333,12 @@ function getTimeline(tasks) {
 		var date = "<div class='dateLine'><div class='date'>" + date + "</div><div class='relative'>" + relative + "</div></div><div class='content'>" + content + "</div>"
 		
 		// Append To Root Node
-		rootNode.querySelector("span").appendChild(dv.el("div", date, {cls: "details " + detailsCls, attr: {"data-year": year, "data-types": containedTypes.join(" ")}}));
+		containedTypesPerDay = [...new Set(containedTypesPerDay)].sort();
+		rootNode.querySelector("span").appendChild(dv.el("div", date, {cls: "details " + detailsCls, attr: {"data-year": year, "data-types": containedTypesPerDay.join(" ")}}));
+		
+		// Set containedTypesPerYear
+		containedTypesPerYear = [...new Set(containedTypesPerYear)].sort()
+		yearNode.setAttribute("data-types", containedTypesPerYear);
 	};
+	
 };
-
-function showPopup() {
-	rootNode.querySelector("span").appendChild(dv.el("div", "", {cls: "popup"}));
-	rootNode.querySelector(".popup").classList.add("show");
-}
