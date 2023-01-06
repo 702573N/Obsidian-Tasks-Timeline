@@ -70,6 +70,7 @@ options: "noPriority"
 options: "noTag"
 options: "noAdd"
 options: "noRelative"
+options: "noYear"
 ```
 With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates or the add task to daily note button on today.
 
@@ -128,6 +129,13 @@ With the sort paramter you can set your personal sort algorithm to sort your tas
 overdueTasksToday: true
 ```
 With this parameter you switch the visibility of your overdues tasks on the timeline. By setting this parameter to `true`, your overdue tasks will show up on today. By default this setting is `false`.
+
+### dateFormat:
+```
+dateFormat: "YYYY-MM-DD"
+dateFormat: "ddd, MMM D"
+```
+With this parameter you can set a custom date format with moment.js syntax. By default the format "ddd, MMM D" is set.
 
 ---
 
