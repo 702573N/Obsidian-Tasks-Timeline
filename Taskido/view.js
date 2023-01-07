@@ -44,10 +44,16 @@ getTimeline(tasks);
 setEvents();
 
 function getMeta(tasks) {
+	
+	// Aufgaben bekommen die Schlüssel due/start/scheduled nur dann zugewiesen, wenn die Aufgabe nicht beendet ist
+	// Wenn eine Aufgabe beendet ist, erhält diese ausschließlich den Schlüssel done
+	
 	for (i=0;i<tasks.length;i++) {
 		let happens = {};
 		var taskText = tasks[i].text;
 		var taskFile = getFilename(tasks[i].path);
+		
+		// Daily Notes
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
 		var dailyTaskMatch = taskText.match(/(\d{4}\-\d{2}\-\d{2})/);
 		if (dailyNoteMatch && tasks[i].completed == false) {
@@ -56,6 +62,27 @@ function getMeta(tasks) {
 				happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
 			};
 		};
+		
+		// Dataview Tasks
+		while (inlineFields = /\[([^\]]+)\:\:(\d{4}\-\d{2}-\d{2})\]/g.exec(tasks[i].text)) {
+			var inlineField = inlineFields[0];
+			var fieldKey = inlineFields[1].toLowerCase();
+			var fieldValue = moment(inlineFields[2]).format("YYYY-MM-DD");
+			
+			if (tasks[i].completed == false) {
+				if (fieldKey == "due" || fieldKey == "scheduled" || fieldKey == "start") {
+					happens[fieldKey] = fieldValue;
+					timelineDates.push(fieldValue);
+				};
+			} else if (tasks[i].completed == true) {
+				if (fieldKey == "completion") {
+					happens["done"] = fieldValue;
+				};
+			};
+			tasks[i].text = tasks[i].text.replace(inlineField, "");
+		};
+		
+		// Tasks Plugin Tasks
 		var dueMatch = taskText.match(/\📅\W(\d{4}\-\d{2}\-\d{2})/);
 		if (dueMatch && tasks[i].completed == false) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
@@ -136,6 +163,8 @@ function getMeta(tasks) {
 		} else {
 			tasks[i].text = tasks[i].text.replaceAll("#task","");
 		};
+		
+		// Link Detection
 		while (outerLink = /\[([^\]]+)\]\(([^)]+)\)/g.exec(tasks[i].text)) {
 			tasks[i].text = tasks[i].text.replace(outerLink[0], "<a class='external-link outerLink' href='" + outerLink[2] + "'>" + outerLink[1] + "</a>");
 		};
@@ -285,7 +314,7 @@ function getTimeline(tasks) {
 		};
 		
 		tasksFiltered.forEach(function(item) {
-			
+			console.log(item)
 			var file = getFilename(item.path);
 			var link = item.link.path.replace("'", "&apos;");
 			var text = item.text;
