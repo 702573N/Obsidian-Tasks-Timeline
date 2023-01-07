@@ -162,8 +162,10 @@
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	height: 22px;
 	align-items: center;
+}
+.taskido .line:first-child {
+	line-height: 22px;
 }
 .taskido .line:empty {
 	display: none;
@@ -190,12 +192,6 @@
 	font-size: 15px;
 	font-weight: bold;
 	color: var(--task-color);
-	/*color: var(--text-normal);*/
-	height: 18px;
-	line-height: 18px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 }
 .taskido .task .content {
 	display: block;
@@ -275,6 +271,8 @@
 .taskido.noTag .tag,
 .taskido.noPriority .priority,
 .taskido.noAdd .add,
+.taskido.noFile .task:not(.star, .add) .line:nth-child(1),
+.taskido.noInfo .task .line:nth-child(2),
 .taskido.noRelative .relative { display: none !important; }
 /* Focus */
 .taskido.todayFocus .details:not(.today),
