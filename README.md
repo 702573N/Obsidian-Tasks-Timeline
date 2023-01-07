@@ -163,6 +163,11 @@ The tag-autocomplete functionality inside Obsidian makes it possible to quickly 
 
 <img width="311" alt="Bildschirm­foto 2023-01-07 um 09 02 03" src="https://user-images.githubusercontent.com/59178587/211140582-ba3c79d4-7504-42da-ab4b-1886c2c112c0.png">
 
+**Small Color Palette**
+```
+#ff443a/red #ff9d0a/orange #ffd60a/yellow #30d158/green #66d4cf/mint #40c8e0/teal #64d3ff/cyan #0a84ff/blue #5e5ce6/indigo #bf5af2/purple #ff375f/pink #ac8f68/brown
+```
+
 ---
 
 ## Focussing
