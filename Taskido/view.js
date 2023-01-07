@@ -363,7 +363,7 @@ function getTimeline(tasks) {
 				text = text.replace(tag, "");
 			});
 			
-			var task = "<a class='internal-link' href='" + link + "'><div class='task " + cls + "' style='--task-color:" + color + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + file + "</div></div><div class='line'>" + info + "</div><div class='content'>" + text + "</div></div></div></a>";
+			var task = "<a class='internal-link' href='" + link + "'><div class='task " + cls + "' style='--task-color:" + color + "' title='" + file + ": " + text + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + file + "</div></div><div class='line'>" + info + "</div><div class='content'>" + text + "</div></div></div></a>";
 			content += task;
 		});
 		
@@ -376,8 +376,8 @@ function getTimeline(tasks) {
 
 		// Add Task For Today
 		if (timelineDates[i] == today) {
-			var newTask = "<a class='internal-link' href='" + dailyNoteFolder + timelineDates[i] + "'><div class='task add'><div class='timeline'><div class='icon'>" + addIcon + "</div></div><div class='lines'><div class='line'><div class='file'>Add task for today</div></div></div></div></a>";
-			content += newTask;
+			var addButton = "<a class='internal-link' href='" + dailyNoteFolder + timelineDates[i] + "'><div class='task add'><div class='timeline'><div class='icon'>" + addIcon + "</div></div><div class='lines'><div class='line'><div class='file'>Add task for today</div></div></div></div></a>";
+			content += addButton;
 		};
 		
 		// Set Date Template
