@@ -161,6 +161,8 @@ The tag-autocomplete functionality inside Obsidian makes it possible to quickly 
 
 <img width="183" alt="Bildschirm­foto 2023-01-02 um 11 50 05" src="https://user-images.githubusercontent.com/59178587/210222128-f892d87a-7a2b-4553-a8a6-b5d3d4dd3b51.png">
 
+<img width="311" alt="Bildschirm­foto 2023-01-07 um 09 02 03" src="https://user-images.githubusercontent.com/59178587/211140582-ba3c79d4-7504-42da-ab4b-1886c2c112c0.png">
+
 ---
 
 ## Focussing
