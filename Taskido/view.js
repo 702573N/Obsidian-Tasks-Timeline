@@ -181,7 +181,7 @@ function getMeta(tasks) {
 		} else {
 			tasks[i].text = tasks[i].text.replaceAll("#task","");
 		};
-		
+
 		// Link Detection
 		while (outerLink = /\[([^\]]+)\]\(([^)]+)\)/g.exec(tasks[i].text)) {
 			tasks[i].text = tasks[i].text.replace(outerLink[0], "<a class='external-link outerLink' href='" + outerLink[2] + "'>" + outerLink[1] + "</a>");
@@ -191,6 +191,7 @@ function getMeta(tasks) {
 			tasks[i].text = tasks[i].text.replace(innerLink[0], "<a class='internal-link innerLink' href='" + innerLink[1] + "'>" + innerLink[1] + "</a>");
 		};
 		tasks[i].happens = happens;
+		
 	};
 	timelineDates.push(today);
 	timelineDates = [...new Set(timelineDates)].sort();
@@ -388,7 +389,7 @@ function getTimeline(tasks) {
 				text = text.replace(tag, "");
 			});
 			
-			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + ": " + text + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + file + "</div></div><div class='line'>" + info + "</div><div class='content'>" + text + "</div></div></div>";
+			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + file + "</div></div><div class='line'>" + info + "</div><div class='content'>" + text + "</div></div></div>";
 			content += task;
 		});
 		
