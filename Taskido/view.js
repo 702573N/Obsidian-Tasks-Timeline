@@ -214,7 +214,7 @@ function setEvents() {
 	rootNode.querySelector('.todayHeader').addEventListener('click', (() => {
 		rootNode.classList.toggle("todayFocus");
 	}));
-	rootNode.querySelectorAll('.task').forEach(t => t.addEventListener('click', (() => {
+	rootNode.querySelectorAll('.task:not(.star, .add)').forEach(t => t.addEventListener('click', (() => {
 		var link = t.getAttribute("data-link");
 		var line = t.getAttribute("data-line");
 		var col = t.getAttribute("data-col");
@@ -398,7 +398,7 @@ function getTimeline(tasks) {
 		});
 		
 		notesFiltered.forEach(function(note) {
-			var star = "<div class='internal-link' href='" + note.path + "'><div class='task star'><div class='timeline'><div class='icon'>" + starIcon + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + note.name + "</div></div><div class='line'></div><div class='content'></div></div></div></div>";
+			var star = "<a class='internal-link' href='" + note.path + "'><div class='task star'><div class='timeline'><div class='icon'>" + starIcon + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + note.name + "</div></div><div class='line'></div><div class='content'></div></div></div></a>";
 			content += star;
 			containedTypesPerDay.push("star");
 			containedTypesPerYear.push("star");
