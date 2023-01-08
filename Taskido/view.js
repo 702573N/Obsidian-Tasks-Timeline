@@ -61,44 +61,47 @@ function getMeta(tasks) {
 		};
 		
 		// Dataview Tasks
-		while (inlineFields = /\[([^\]]+)\:\:(\d{4}\-\d{2}-\d{2})\]/g.exec(tasks[i].text)) {
+		while (inlineFields = /\[([^\]]+)\:\:([^\]]+)\]/g.exec(tasks[i].text)) {
 			var inlineField = inlineFields[0];
 			var fieldKey = inlineFields[1].toLowerCase();
-			var fieldValue = moment(inlineFields[2]).format("YYYY-MM-DD");
-			if (tasks[i].completed == false) {
-				if ( fieldKey == "due" && fieldValue < moment().format("YYYY-MM-DD") ) {
-					if (overdueTasksToday == true) {
-						happens["overdue"] = moment().format("YYYY-MM-DD");
-					} else {
-						happens["overdue"] = fieldValue;
-						timelineDates.push(fieldValue);
+			var fieldValue = inlineFields[2];
+			if ( fieldKey == "due" || fieldKey == "scheduled" || fieldKey == "start" || fieldKey == "completed") {
+				var fieldDate = moment(fieldValue).format("YYYY-MM-DD");
+				if (tasks[i].completed == false) {
+					if ( fieldKey == "due" && fieldDate < moment().format("YYYY-MM-DD") ) {
+						if (overdueTasksToday == true) {
+							happens["overdue"] = moment().format("YYYY-MM-DD");
+						} else {
+							happens["overdue"] = fieldDate;
+							timelineDates.push(fieldDate);
+						};
+					} else if (fieldKey == "due") {
+						happens["due"] = fieldDate;
+						timelineDates.push(fieldDate);
 					};
-				} else if (fieldKey == "due") {
-					happens["due"] = fieldValue;
-					timelineDates.push(fieldValue);
-				};
-				if ( fieldKey == "scheduled" && fieldValue < moment().format("YYYY-MM-DD") ) {
-					happens["process"] = moment().format("YYYY-MM-DD");
-				} else if (fieldKey == "scheduled") {
-					happens["scheduled"] = fieldValue;
-					timelineDates.push(fieldValue);
-				};
-				if ( fieldKey == "start" && fieldValue < moment().format("YYYY-MM-DD") ) {
-					happens["process"] = moment().format("YYYY-MM-DD");
-				} else if (fieldKey == "start") {
-					happens["start"] = fieldValue;
-					timelineDates.push(fieldValue);
-				};
-			} else if (tasks[i].completed == true) {
-				if (fieldKey == "completion") {
-					happens["done"] = fieldValue;
+					if ( fieldKey == "scheduled" && fieldDate < moment().format("YYYY-MM-DD") ) {
+						happens["process"] = moment().format("YYYY-MM-DD");
+					} else if (fieldKey == "scheduled") {
+						happens["scheduled"] = fieldDate;
+						timelineDates.push(fieldDate);
+					};
+					if ( fieldKey == "start" && fieldDate < moment().format("YYYY-MM-DD") ) {
+						happens["process"] = moment().format("YYYY-MM-DD");
+					} else if (fieldKey == "start") {
+						happens["start"] = fieldDate;
+						timelineDates.push(fieldDate);
+					};
+				} else if (tasks[i].completed == true) {
+					if (fieldKey == "completion") {
+						happens["done"] = fieldDate;
+					};
 				};
 			};
 			tasks[i].text = tasks[i].text.replace(inlineField, "");
 		};
 		
 		// Tasks Plugin Tasks
-		var dueMatch = taskText.match(/\📅\W(\d{4}\-\d{2}\-\d{2})/);
+		var dueMatch = taskText.match(/📅 *(\d{4}-\d{2}-\d{2})/);
 		if (dueMatch && tasks[i].completed == false) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
 			if ( dueMatch[1] < moment().format("YYYY-MM-DD") ) {
@@ -115,7 +118,7 @@ function getMeta(tasks) {
 		} else if (dueMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
 		};
-		var startMatch = taskText.match(/\🛫\W(\d{4}\-\d{2}\-\d{2})/);
+		var startMatch = taskText.match(/🛫 *(\d{4}-\d{2}-\d{2})/);
 		if (startMatch && tasks[i].completed == false) {
 			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
 			if ( startMatch[1] < moment().format("YYYY-MM-DD") ) {
@@ -127,7 +130,7 @@ function getMeta(tasks) {
 		} else if (startMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
 		};
-		var scheduledMatch = taskText.match(/\⏳\W(\d{4}\-\d{2}\-\d{2})/);
+		var scheduledMatch = taskText.match(/⏳ *(\d{4}-\d{2}-\d{2})/);
 		if (scheduledMatch && tasks[i].completed == false) {
 			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
 			if ( scheduledMatch[1] < moment().format("YYYY-MM-DD") ) {
@@ -139,7 +142,7 @@ function getMeta(tasks) {
 		} else if (scheduledMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
 		};
-		var doneMatch = taskText.match(/\✅\W(\d{4}\-\d{2}\-\d{2})/);
+		var doneMatch = taskText.match(/✅ *(\d{4}-\d{2}-\d{2})/);
 		if (doneMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(doneMatch[0], "");
 			if (done == true || doneMatch[1] == moment().format("YYYY-MM-DD")) {
@@ -147,10 +150,10 @@ function getMeta(tasks) {
 				happens["done"] = doneMatch[1];
 			};
 		};
-		var repeatMatch = taskText.includes("🔁");
+		var repeatMatch = taskText.match(/🔁 ?([a-zA-Z0-9, !]+)/)
 		if (repeatMatch) {
-			tasks[i].repeat = tasks[i].text.substring(taskText.indexOf("🔁"), tasks[i].text.length);
-			tasks[i].text = tasks[i].text.substring(0, taskText.indexOf("🔁"))
+			tasks[i].repeat = repeatMatch[1];
+			tasks[i].text = tasks[i].text.replace(repeatMatch[0], "");
 		};
 		var lowMatch = taskText.includes("🔽");
 		if (lowMatch) {
