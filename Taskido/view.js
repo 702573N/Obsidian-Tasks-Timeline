@@ -393,12 +393,12 @@ function getTimeline(tasks) {
 				text = text.replace(tag, "");
 			});
 			
-			var task = "<a class='internal-link' href='" + link + "'><div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + file + "</div></div><div class='line'>" + info + "</div><div class='content'>" + text + "</div></div></div></a>";
+			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><a class='internal-link' href='" + link + "'><div class='file'>" + file + "</div></a></div><div class='line'>" + info + "</div><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a></div></div>";
 			content += task;
 		});
 		
 		notesFiltered.forEach(function(note) {
-			var star = "<a class='internal-link' href='" + note.path + "'><div class='task star'><div class='timeline'><div class='icon'>" + starIcon + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + note.name + "</div></div><div class='line'></div><div class='content'></div></div></div></a>";
+			var star = "<div class='internal-link' href='" + note.path + "'><div class='task star'><div class='timeline'><div class='icon'>" + starIcon + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + note.name + "</div></div><div class='line'></div><div class='content'></div></div></div></div>";
 			content += star;
 			containedTypesPerDay.push("star");
 			containedTypesPerYear.push("star");
