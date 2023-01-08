@@ -1,4 +1,4 @@
-let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, starred, overdueTasksToday, dateFormat, options} = input;
+let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, overdueTasksToday, dateFormat, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -15,9 +15,7 @@ if (!dateFormat) {dateFormat = "ddd, MMM D"};
 
 // Variables
 var timelineDates = [];
-if (starred == true) {
-	var timelineNotes = dv.pages().file.filter(f=>f.starred == true && timelineDates.push(moment(f.cday.toString()).format("YYYY-MM-DD")) );
-};
+var timelineNotes = dv.pages().file.filter(f=>f.starred == true && timelineDates.push(moment(f.cday.toString()).format("YYYY-MM-DD")) );
 var tid = (new Date()).getTime();
 var today = moment().format("YYYY-MM-DD");
 var dailyNoteRegEx = momentToRegex(dailyNoteFormat);
@@ -26,7 +24,6 @@ var dailyNoteRegEx = momentToRegex(dailyNoteFormat);
 const rootNode = dv.el("div", "", {cls: "taskido "+options, attr: {id: "taskido"+tid}});
 
 // Icons
-// var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
 var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>';
 var dueIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
 var scheduledIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>';
@@ -34,9 +31,7 @@ var startIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
 var overdueIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
 var processIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h13l4-3.5L18 6Z"></path><path d="M12 13v9"></path><path d="M12 2v4"></path></svg>';
 var dailynoteIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
-// var unplannedIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>';
 var unplannedIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>';
-// var addIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>';
 var addIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>';
 var tagIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path><path d="M7 7h.01"></path></svg>';
 var repeatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>';
@@ -211,6 +206,33 @@ function setEvents() {
 	rootNode.querySelector('.todayHeader').addEventListener('click', (() => {
 		rootNode.classList.toggle("todayFocus");
 	}));
+	rootNode.querySelectorAll('.task').forEach(t => t.addEventListener('click', (() => {
+		var link = t.getAttribute("data-link");
+		var line = t.getAttribute("data-line");
+		var col = t.getAttribute("data-col");
+		openFile(link, line, col);
+	})));
+};
+
+function openFile(link, line, col) {
+	// https://github.com/obsidianmd/obsidian-api/blob/dbfa19ad7aa6557f0ecff962065c3f540bc77e27/obsidian.d.ts#L680
+	// https://marcus.se.net/obsidian-plugin-docs/reference/typescript/classes/Editor
+	// cmEditor.setCursor(parseInt(line), parseInt(col));
+	// var cmEditor = app.workspace.activeLeaf.view.sourceMode.cmEditor;
+	// var cmLine = cmEditor.getLine(parseInt(line));
+	// var cmLine = cmEditor.setLine(parseInt(line));
+	// .is-flashing
+	
+	app.workspace.openLinkText('', link).then(() => {
+		if (line && col) {
+			const view = app.workspace.activeLeaf.getViewState();
+			view.state.mode = 'source'; // mode = source || preview
+			app.workspace.activeLeaf.setViewState(view);
+			var cmEditor = app.workspace.activeLeaf.view.editor;
+			cmEditor.setSelection({line: parseInt(line), ch: 6},{line: parseInt(line), ch: parseInt(col)})
+			cmEditor.focus();
+		};
+	});
 };
 
 function getFilename(path) {
@@ -262,9 +284,7 @@ function getTimeline(tasks) {
 	for (i=0; i<timelineDates.length; i++) {
 		
 		// Variables
-		if (starred == true) {
-			var notesFiltered = timelineNotes.filter(n=>moment(n.cday.toString()).format("YYYY-MM-DD") == timelineDates[i]);
-		};
+		var notesFiltered = timelineNotes.filter(n=>moment(n.cday.toString()).format("YYYY-MM-DD") == timelineDates[i]);
 		var tasksFiltered = tasks.filter(t=>Object.values(t.happens).includes(timelineDates[i].toString())).sort(t=> eval(sort));
 		var relative = moment(timelineDates[i].toString()).fromNow();
 		var date = moment(timelineDates[i].toString()).format(dateFormat)
@@ -338,6 +358,8 @@ function getTimeline(tasks) {
 			var file = getFilename(item.path);
 			var link = item.link.path.replace("'", "&apos;");
 			var text = item.text;
+			var posEndLine = item.position.start.line;
+			var posEndCol = item.position.end.col;
 			var info = "";
 			var color = getMetaFromNote(item, "color");
 			var cls = Object.keys(item.happens).find(key => item.happens[key] === timelineDates[i].toString());
@@ -359,20 +381,20 @@ function getTimeline(tasks) {
 					var style = "style='--tag-color:#" + hexColorMatch[1] + ";--tag-background:#" + hexColorMatch[1] + "1a'";
 					tagText = hexColorMatch[2];
 				};
-				info += "<div href='" + tag + "' class='tag' " + style + "><div class='icon'>" + tagIcon + "</div><div class='label'>" + tagText + "</div></div>";
+				info += "<a href='" + tag + "' class='tag' " + style + "><div class='icon'>" + tagIcon + "</div><div class='label'>" + tagText + "</div></a>";
 				text = text.replace(tag, "");
 			});
 			
-			var task = "<a class='internal-link' href='" + link + "'><div class='task " + cls + "' style='--task-color:" + color + "' title='" + file + ": " + text + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + file + "</div></div><div class='line'>" + info + "</div><div class='content'>" + text + "</div></div></div></a>";
+			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + ": " + text + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + file + "</div></div><div class='line'>" + info + "</div><div class='content'>" + text + "</div></div></div>";
 			content += task;
 		});
 		
-		if (starred == true) {
 		notesFiltered.forEach(function(note) {
 			var star = "<a class='internal-link' href='" + note.path + "'><div class='task star'><div class='timeline'><div class='icon'>" + starIcon + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + note.name + "</div></div><div class='line'></div><div class='content'></div></div></div></a>";
 			content += star;
+			containedTypesPerDay.push("star");
+			containedTypesPerYear.push("star");
 		});
-		};
 
 		// Add Task For Today
 		if (timelineDates[i] == today) {
