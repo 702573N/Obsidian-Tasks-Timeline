@@ -113,6 +113,7 @@
 	border-radius: 10px;
 	padding: 2.5px;
 	margin: 2.5px 0;
+	cursor: pointer;
 }
 .taskido .timeline,
 .taskido .lines {
@@ -273,6 +274,14 @@
 .taskido.noAdd .add,
 .taskido.noFile .task:not(.star, .add) .line:nth-child(1),
 .taskido.noInfo .task .line:nth-child(2),
+.taskido.noStar .year[data-types="star"],
+.taskido.noStar .details[data-types="star"],
+.taskido.noStar .task.star,
+.taskido.noDone .year[data-types="done"],
+.taskido.noDone .details[data-types="done"],
+.taskido.noDone .task.done,
+.taskido.noDone.noStar .year[data-types="done,star"],
+.taskido.noDone.noStar .details[data-types="done,star"],
 .taskido.noRelative .relative { display: none !important; }
 /* Focus */
 .taskido.todayFocus .details:not(.today),
