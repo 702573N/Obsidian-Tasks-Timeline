@@ -73,8 +73,9 @@ options: "noRelative"
 options: "noYear"
 options: "noFile"
 options: "noInfo"
+options: "noStar"
 ```
-With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line) or the add task to daily note button on today.
+With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today or the starred notes.
 
 ```
 options: "todayFocus"
@@ -83,6 +84,14 @@ options: "overdueFocus"
 options: "unplannedFocus"
 ```
 With this options you can set a default focus after open the timeline.
+
+```
+options: "todoFilter"
+options: "overdueFilter"
+options: "unplannedFilter"
+```
+
+With this options you can set a default filter after open the timeline.
 
 ### dailyNoteFolder:
 ```
@@ -103,14 +112,6 @@ You can set a custom format with a limited base set of characters: Y M D [W] ww 
 globalTaskFilter: "#task"
 ```
 Set a global task filter to hide from task text/description inside tasks-calendar.
-
-### starred:
-```
-starred: false
-```
-By default your starred notes are pinned to the timeline based on the creation date of files. This can be disabled by entering this parameter. This function allows you to keep an eye on your most important notes without having to leave the timeline. It is also possible to remove stars by right-clicking in the timeline. Please consider the update rate of the Dataview plugin, which can lead to a delay here.
-
-<img width="359" alt="Bildschirm­foto 2023-01-02 um 12 14 04" src="https://user-images.githubusercontent.com/59178587/210223951-8bf33632-1699-4771-8f9d-fe54245262f3.png">
 
 ### done:
 ```
