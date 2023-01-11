@@ -127,11 +127,17 @@ sort: "t.priority"
 ```
 With the sort paramter you can set your personal sort algorithm to sort your tasks inside a day.
 
-### overdueTasksToday:
+### carryForwardOverdue:
 ```
-overdueTasksToday: true
+carryForwardOverdue: true
 ```
-With this parameter you switch the visibility of your overdues tasks on the timeline. By setting this parameter to `true`, your overdue tasks will show up on today. By default this setting is `false`.
+This parameter carry forward past due tasks and display them on the current date.
+
+### carryForwardUnplanned:
+```
+carryForwardUnplanned: true
+```
+This parameter carry forward past unplanned tasks and display them on the current date.
 
 ### dateFormat:
 ```
