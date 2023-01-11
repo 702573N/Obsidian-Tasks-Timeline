@@ -74,8 +74,9 @@ options: "noYear"
 options: "noFile"
 options: "noInfo"
 options: "noStar"
+options: "noAnimation"
 ```
-With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today or the starred notes.
+With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, starred notes pinned to timeline, or animations.
 
 ```
 options: "todayFocus"
