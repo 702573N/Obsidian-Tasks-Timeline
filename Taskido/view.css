@@ -152,7 +152,8 @@
 }
 .taskido .task.done .tag,
 .taskido .task.done .repeat,
-.taskido .task.done .priority {
+.taskido .task.done .priority,
+.taskido .task.done .relative {
 	color: var(--text-faint);
 }
 .taskido .task.done .content {
@@ -182,12 +183,12 @@
 .taskido .timeline .icon {
 	text-align: center;
 	color: var(--icon-color-active);
+	height: 22px;
 }
 .taskido .timeline .icon svg {
 	height: 18px;
 	width: 18px;
 	stroke-width: 1.75px;
-	height: 22px;
 }
 .taskido .task .file {
 	font-size: 15px;
@@ -204,17 +205,18 @@
 .taskido .tag {
 	color: var(--tag-color) !important;
 	background: var(--tag-background) !important;
-	/*border: 0.5px solid var(--tag-color) !important;*/
 	padding: 0px 5px;
 }
 .taskido .repeat,
-.taskido .priority {
+.taskido .priority,
+.taskido .relative {
 	color: var(--text-normal);
 	padding: 0px;
 }
 .taskido .tag,
 .taskido .repeat,
-.taskido .priority {
+.taskido .priority,
+.taskido .relative {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -226,39 +228,64 @@
 }
 .taskido .tag .icon,
 .taskido .repeat .icon,
-.taskido .priority .icon {
+.taskido .priority .icon,
+.taskido .relative .icon {
 	text-align: center;
 	height: 18px;
 }
 .taskido .tag .label,
 .taskido .repeat .label,
-.taskido .priority .label {
+.taskido .priority .label,
+.taskido .relative .label {
 	margin-left: 2px;
 }
 .taskido .tag svg,
 .taskido .repeat svg,
-.taskido .priority svg {
+.taskido .priority svg,
+.taskido .relative svg {
 	height: 12px;
 	width: 12px;
 	stroke-width: 1.75px;
 }
 .taskido .task.overdue .content {
 	color: #ff375f !important;
-	font-style: italic;
+	font-style: italic !important;
+}
+.taskido .overdue .timeline {
+	-webkit-animation: blink 2s infinite;
 }
 .taskido .overdue .timeline svg {
-	stroke: #ff375f;
+	stroke: #ff375f !important;
 }
 .taskido .overdue .stripe:after {
-	background: #ff375f;
+	background: #ff375f !important;
 }
 .taskido .add .timeline svg {
 	stroke: var(--text-faint);
 }
+.taskido .done .timeline svg {
+	stroke: var(--text-faint) !important;
+}
+.taskido .done .stripe:after {
+	background: var(--text-faint) !important;
+}
+.taskido .process .timeline svg {
+	-webkit-animation: rotate 2s linear infinite;
+}
 .taskido .add .file {
 	color: var(--text-faint) !important;
 }
+@-webkit-keyframes rotate {
+	from {-webkit-transform: rotate(0deg)} to {-webkit-transform: rotate(360deg)}
+}
+@keyframes blink {
+	from { opacity: 1 } 50% { opacity: 0.25 } to { opacity: 1 }
+}
 /* Classes */
+.taskido.noAnimation .process .timeline svg,
+.taskido.noAnimation .overdue .timeline svg {
+	-webkit-animation: none !important;
+}
 .taskido.todayFocus .todayHeader,
 .taskido.todoFocus .counter#todo,
 .taskido.todoFilter .counter#todo,
@@ -295,7 +322,7 @@
 /* Filter */
 .taskido.todoFilter .year:not(.current):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
 .taskido.todoFilter .details:not(.today):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
-.taskido.todoFilter .task:not(.due, .scheduled, .overdue) { display: none; }
+.taskido.todoFilter .task:not(.due, .scheduled) { display: none; }
 .taskido.overdueFilter .year:not(.current):not([data-types*="overdue"]) { display: none; }
 .taskido.overdueFilter .details:not(.today):not([data-types*="overdue"]) { display: none; }
 .taskido.overdueFilter .task:not(.overdue) { display: none; }
