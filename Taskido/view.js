@@ -1,4 +1,4 @@
-let {pages, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
+let {pages, inbox, select, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -13,8 +13,10 @@ var taskOrder = ["done", "overdue", "due", "scheduled", "start", "process", "unp
 if (!sort) {sort = "t => t.order"};
 if (!counterAction) {counterAction = "Focus"} else { counterAction = counterAction[0].toUpperCase() + counterAction.slice(1);};
 if (!dateFormat) {dateFormat = "ddd, MMM D"};
+if (!select) {select = "todaysDailyNote"};
 
 // Variables
+var timelineFiles = [];
 var timelineDates = [];
 var timelineNotes = dv.pages().file.filter(f=>f.starred == true && timelineDates.push(moment(f.cday.toString()).format("YYYY-MM-DD")) );
 var tid = (new Date()).getTime();
@@ -43,6 +45,7 @@ var forwardIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24
 // Initialze
 getMeta(tasks);
 getTimeline(tasks);
+getSelectOptions();
 setEvents();
 
 function getMeta(tasks) {
@@ -51,6 +54,20 @@ function getMeta(tasks) {
 		let happens = {};
 		var taskText = tasks[i].text;
 		var taskFile = getFilename(tasks[i].path);
+		var filePath = tasks[i].link.path;
+		
+		// Fill timelineFiles array with open task files
+		if (tasks[i].completed == false) {
+			timelineFiles.push(filePath);
+			timelineFiles = [...new Set(timelineFiles)].sort();
+		};
+		
+		// Inbox
+		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/(\d{4}\-\d{2}\-\d{2})/)) {
+			timelineDates.push(moment().format("YYYY-MM-DD"));
+			happens["unplanned"] = moment().format("YYYY-MM-DD");
+			tasks[i].order = 7;
+		};
 		
 		// Daily Notes
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
@@ -229,6 +246,24 @@ function getMeta(tasks) {
 	timelineDates = [...new Set(timelineDates)].sort();
 };
 
+function getSelectOptions() {
+	timelineFiles.push(moment().format(dailyNoteFormat));
+	timelineFiles = [...new Set(timelineFiles)].sort();
+	var fileSelect = rootNode.querySelector('.fileSelect');
+	timelineFiles.forEach(function(file) {
+		var opt = document.createElement('option');
+		opt.value = file;
+		opt.innerHTML = getFilename(file);
+		opt.title = file;
+		if (select && file == select) {
+			opt.setAttribute('selected', true);
+		} else if (select && select == "todaysDailyNote" && file == moment().format(dailyNoteFormat)) {
+			opt.setAttribute('selected', true);
+		};
+		fileSelect.appendChild(opt);
+	});
+};
+
 function setEvents() {
 	rootNode.querySelectorAll('.counter').forEach(cnt => cnt.addEventListener('click', (() => {
 		var activeFocus = Array.from(rootNode.classList).filter(c=>c.endsWith(counterAction) && !c.startsWith("today"));
@@ -248,6 +283,70 @@ function setEvents() {
 		var col = t.getAttribute("data-col");
 		openFile(link, line, col);
 	})));
+	rootNode.querySelector('.ok').addEventListener('click', (() => {
+		var filePath = rootNode.querySelector('.fileSelect').value;
+		var newTask = rootNode.querySelector('.newTask').value;
+		var abstractFilePath = app.vault.getAbstractFileByPath(filePath);
+		if (abstractFilePath) {
+			app.vault.read(abstractFilePath).then(function(fileText) {
+				app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
+				rootNode.querySelector('.newTask').value = "";
+				rootNode.querySelector('.newTask').blur();
+				new Notice("New task saved!")
+			});
+		} else {
+			// If file doesn't exist
+			var filePath = dailyNoteFolder + filePath + ".md";
+			app.vault.create(filePath, "- [ ] " + newTask);
+			new Notice("New task saved!")
+		};
+	}));
+	rootNode.querySelector('.fileSelect').addEventListener('change', (() => {
+		rootNode.querySelector('.newTask').focus();
+	}));
+	rootNode.querySelector('.newTask').addEventListener('input', (() => {
+		var input = rootNode.querySelector('.newTask');
+		var newTask = input.value;
+		
+		// Icons
+		if (newTask.includes("due ")) { input.value = newTask.replace("due", "📅") };
+		if (newTask.includes("start ")) { input.value = newTask.replace("start", "🛫") };
+		if (newTask.includes("scheduled ")) { input.value = newTask.replace("scheduled", "⏳") };
+		if (newTask.includes("done ")) { input.value = newTask.replace("done", "✅") };
+		if (newTask.includes("high ")) { input.value = newTask.replace("high", "⏫") };
+		if (newTask.includes("medium ")) { input.value = newTask.replace("medium", "🔼") };
+		if (newTask.includes("low ")) { input.value = newTask.replace("low", "🔽") };
+		if (newTask.includes("repeat ")) { input.value = newTask.replace("repeat", "🔁") };
+		if (newTask.includes("recurring ")) { input.value = newTask.replace("recurring", "🔁") };
+		
+		// Dates
+		if (newTask.includes("today")) { input.value = newTask.replace("today", moment().format("YYYY-MM-DD")) };
+		if (newTask.includes("tomorrow")) { input.value = newTask.replace("tomorrow", moment().add(1, "days").format("YYYY-MM-DD")) };
+		if (newTask.includes("yesterday")) { input.value = newTask.replace("yesterday", moment().substract(1, "days").format("YYYY-MM-DD")) };
+		
+		// In X days/weeks/month/years
+		var futureDate = newTask.match(/(in)\W(\d{1,3})\W(days|day|weeks|week|month|years|year) /);
+		if (futureDate) {
+			var x = parseInt(futureDate[2]);
+			var unit = futureDate[3];
+			var date = moment().add(x, unit).format("YYYY-MM-DD[ ]")
+			input.value = newTask.replace(futureDate[0], date);
+		};
+
+		// Next Weekdays
+		// var weekday = newTask.match(/(monday|tuesday|wednesday|thursday|friday|saturday|sunday) /);
+		// if (weekday) {
+		// 	const today = moment().weekday();
+		// 	const dayINeed = moment().day(weekday[1]);
+		// 	if (today <= dayINeed) { 
+		// 		console.log( moment().isoWeekday(dayINeed) );
+		// 	} else {
+		// 		console.log( moment().add(1, 'weeks').isoWeekday(dayINeed) );
+		// 	};
+		// };
+
+		rootNode.querySelector('.newTask').focus();
+	}));
 };
 
 function openFile(link, line, col) {
@@ -258,6 +357,8 @@ function openFile(link, line, col) {
 	// var cmLine = cmEditor.getLine(parseInt(line));
 	// var cmLine = cmEditor.setLine(parseInt(line));
 	// .is-flashing
+	// app.vault.create(newTitle + ".md", newContent);
+	// app.vault.create(file, content)
 	
 	app.workspace.openLinkText('', link).then(() => {
 		if (line && col) {
@@ -384,6 +485,12 @@ function getTimeline(tasks) {
 			todayContent += "<div class='counter' id='todo'><div class='count'>" + todoCount + "</div><div class='label'>To Do</div></div>"
 			todayContent += "<div class='counter' id='overdue'><div class='count'>" + overdueCount + "</div><div class='label'>Overdue</div></div>"
 			todayContent += "<div class='counter' id='unplanned'><div class='count'>" + unplannedCount + "</div><div class='label'>Unplanned</div></div>"
+			todayContent += "</div>"
+			todayContent += "<div class='input'>"
+			todayContent += "<div class='left'><select class='fileSelect'></select><input class='newTask' type='text' placeholder='Take out the trash'/></div>"
+			todayContent += "<div class='right'><button class='ok'>"
+			todayContent += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg>'
+			todayContent += "</button></div>"
 			todayContent += "</div>"
 			todayContent += "<div class='motivation'>" + motivation + "</div>"
 			
