@@ -75,8 +75,9 @@ options: "noFile"
 options: "noInfo"
 options: "noStar"
 options: "noAnimation"
+options: "noQuickEntry"
 ```
-With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, starred notes pinned to timeline, or animations.
+With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, starred notes pinned to timeline, animations, or the quick entry panel.
 
 ```
 options: "todayFocus"
@@ -146,6 +147,19 @@ dateFormat: "YYYY-MM-DD"
 dateFormat: "ddd, MMM D"
 ```
 With this parameter you can set a custom date format with moment.js syntax. By default the format "ddd, MMM D" is set.
+
+### select:
+```
+select: "todaysDailyNote"
+select: "Task Management/Inbox.md"
+```
+With this parameter you can set a default file selection for the quick entry panel.
+
+### inbox:
+```
+inbox: "Task Management/Inbox.md"
+```
+With this parameter you can set a custom file as your inbox to scratch tasks first before moving them into the correct note file (GTD).
 
 ---
 
