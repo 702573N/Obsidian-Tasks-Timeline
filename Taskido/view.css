@@ -50,18 +50,18 @@
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
-	background: var(--background-secondary-alt);
 	color: var(--text-normal);
 	border-radius: 10px;
 	padding: 5px;
 	text-align: center;
 	flex: 1 1 0;
-	box-shadow: 0 0 5px 0 rgba(0,0,0,0.1);
 	margin: 0 5px;
 	min-width: 70px;
 	max-width: 150px;
 	overflow: hidden;
 	cursor: pointer;
+	background: var(--interactive-normal);
+	box-shadow: var(--input-shadow);
 }
 .taskido .count {
 	font-size: 18px;
@@ -275,11 +275,98 @@
 .taskido .add .file {
 	color: var(--text-faint) !important;
 }
+/* Animations */
 @-webkit-keyframes rotate {
 	from {-webkit-transform: rotate(0deg)} to {-webkit-transform: rotate(360deg)}
 }
 @keyframes blink {
 	from { opacity: 1 } 50% { opacity: 0.25 } to { opacity: 1 }
+}
+/* Quick Entry Panel */
+.taskido .input {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	background: var(--background-modifier-form-field);
+	border: var(--input-border-width) solid var(--background-modifier-border);
+	color: var(--text-normal);
+	border-radius: 10px;
+	box-shadow: 0 0 5px 0 rgba(0,0,0,0.1);
+	margin: 0 5px;
+	overflow: hidden;
+	padding: 5px;
+}
+.taskido .input .left {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-items: center;
+	width: 100%;
+	flex-shrink: 1;
+	flex-grow: 1;
+	overflow: hidden;
+	border-radius: 5px;
+}
+.taskido .input .right {
+	display: block;
+	width: auto;
+	flex-shrink: 1;
+	flex-grow: 1;
+	overflow: hidden;
+	border-radius: 5px;
+}
+.taskido .input select,
+.taskido .input input,
+.taskido .input button {
+	box-shadow: none !important;
+	border: none !important;
+	background: none !important;
+	border-radius: 0 !important;
+}
+.taskido select {
+	height: 15px;
+	width: 100%;
+	font-size: 11px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	padding: 0 10px !important;
+	margin: 0 !important;
+	color: var(--text-faint);
+}
+.taskido input {
+	height: 20px;
+	line-height: 20px;
+	width: 100%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	padding: 0 10px !important;
+	margin: 0 !important;
+	font-size: 14px;
+}
+.taskido .input button {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	height: 100%;
+	width: auto;
+	padding: 0 10px !important;
+	margin: 0 !important;
+}
+.taskido .input svg {
+	height: 18px;
+	width: 18px;
+	stroke-width: 1.75px;
+}
+.taskido .input select:active,
+.taskido .input input:active,
+.taskido .input button:active {
+	border: none !important;
+	box-shadow: none !important;
+	transition: none !important;
 }
 /* Classes */
 .taskido.noAnimation .process .timeline svg,
@@ -309,7 +396,8 @@
 .taskido.noDone .task.done,
 .taskido.noDone.noStar .year[data-types="done,star"],
 .taskido.noDone.noStar .details[data-types="done,star"],
-.taskido.noRelative .relative { display: none !important; }
+.taskido.noRelative .relative,
+.taskido.noQuickEntry .input { display: none !important; }
 /* Focus */
 .taskido.todayFocus .details:not(.today),
 .taskido.todayFocus .year { display: none !important; }
