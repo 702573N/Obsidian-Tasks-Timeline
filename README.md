@@ -199,3 +199,30 @@ A small separation give focus on today. Three info boxes (To Do, Overdue, Unplan
 ) give you all necessary informations to do your best on today. By clicking on each box, your selected tasks get a highlight to keep focus on. By clicking on the "Today" header you can also hide all other days from timeline.
 
 <img width="358" alt="Bildschirm­foto 2023-01-02 um 12 04 05" src="https://user-images.githubusercontent.com/59178587/210223039-094b6586-fdb4-4628-b9f7-863034ec2b33.png">
+
+
+---
+
+## Quick entry panel
+
+<img width="462" alt="Bildschirm­foto 2023-01-12 um 20 45 52" src="https://user-images.githubusercontent.com/59178587/212165875-a1af22e7-ff74-4267-a802-da64da541160.png">
+
+Quick entry panel to write new tasks and push directly into custom note file. All currently used notes with active tasks were listed in a select box on top of the quick entry panel. The todays daily note is pinned to that list too, even if this file doesn't exist at that moment. If you push a task to that file, the file will be created at that moment. In order to simplify the recording of tasks, some autotext shortcuts have been programmed. The following text snippets will be replaced automatically to Task Plugin syntax:
+
+```
+due > 📅
+start > 🛫
+scheduled > ⏳
+done > ✅
+high > ⏫
+medium > 🔼
+low > 🔽
+repeat > 🔁
+recurring > 🔁
+```
+
+Some snippets to enter dates are also included (hopefully the list get's longer in future):
+```today, tomorrow, yesterday```
+
+Relative dates in the below format can also be converted into YYYY-MM-DD format:
+```in X days/weeks/month/years```
