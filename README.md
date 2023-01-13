@@ -32,6 +32,22 @@ Although I initially developed the Obsidian Tasks Calendar, I now work exclusive
     If you paste the main files (js/css) into another folder then "Taskido", you have to replace the name between the first quotation marks.
  
  4. There are more parameters to customize the look and feel of Taskido but there aren't necessary.
+ 
+    Parameters must be declared in the curly bracket and all parameters are separated by a comma. The name of the parameter is followed by a colon, a space and quotes in which the corresponding value of the parameter is declared.
+
+    The options parameter is the only parameter to which multiple values (separated by a space (no comma)) can be assigned. The values declared in options function as style classes within the CSS (Cascading Style Sheet) and primarily serve to hide elements when they are not needed.
+    
+    True and false values are always declared without quotes.
+
+    All this together results in the following structure:
+    
+    ```
+    dv.view("YourScriptFolder", {parameter: "value", parameter: "value", parameter: true, parameter: "value value value value"})
+    
+    For example...
+    
+    dv.view("taskido", {pages: "", select: "Task Management/Inbox.md", inbox: "Task Management/Inbox.md", dailyNoteFolder: "Daily Notes", options: "noMotivation noStar noAnimation"})
+    ```
 
 ---
 
@@ -77,6 +93,13 @@ options: "noStar"
 options: "noAnimation"
 options: "noQuickEntry"
 ```
+
+You can combine all of these parameters:
+
+```
+options: "noMotivations noStar noAnimation"
+```
+
 With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, starred notes pinned to timeline, animations, or the quick entry panel.
 
 ```
