@@ -146,9 +146,9 @@ By default all completed tasks are ignored except the today ones. By entering th
 
 ### sort:
 ```
-sort: "t.text"
-sort: "t.completed"
-sort: "t.priority"
+sort: "t=>t.text"
+sort: "t=>t.completed"
+sort: "t=>t.priority"
 ```
 With the sort paramter you can set your personal sort algorithm to sort your tasks inside a day.
 
