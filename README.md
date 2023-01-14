@@ -190,6 +190,7 @@ counterAction: "focus"
 counterAction: "filter"
 ```
 With this parameter you can set a default action on pressing/clicking one of the three counter buttons (To Do, Overdue, Unplanned). By default "focus" is set. On focus the selected tasks get a highlight in task background. On filter all other tasks were hidden.
+
 ---
 
 ## Note colors
