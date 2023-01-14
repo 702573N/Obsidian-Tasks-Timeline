@@ -239,6 +239,7 @@ A small separation give focus on today. Three info boxes (To Do, Overdue, Unplan
 
 Quick entry panel to write new tasks and push directly into custom note file. All currently used notes with active tasks were listed in a select box on top of the quick entry panel. The todays daily note is pinned to that list too, even if this file doesn't exist at that moment. If you push a task to that file, the file will be created at that moment. In order to simplify the recording of tasks, some autotext shortcuts have been programmed. The following text snippets will be replaced automatically to Task Plugin syntax:
 
+### Symbol snippets
 ```
 due > 📅
 start > 🛫
@@ -251,8 +252,33 @@ repeat > 🔁
 recurring > 🔁
 ```
 
-Some snippets to enter dates are also included (hopefully the list get's longer in future):
-```today, tomorrow, yesterday```
+### Date snippets
 
-Relative dates in the below format can also be converted into YYYY-MM-DD format:
-```in X days/weeks/month/years```
+To get yesterday, today, or tomorrow, simply type...
+```
+today
+tomorrow
+yesterday
+```
+
+If you would like to get the date of the next upcoming weekday by name...
+```
+monday
+tuesday
+wednesday
+thursday
+friday
+saturday
+sunday
+```
+
+Relative dates in the below format can also be converted into YYYY-MM-DD format...
+```
+in X days/weeks/month/years
+
+for example:
+
+in 3 weeks
+or
+in 1 year
+```
