@@ -247,17 +247,27 @@ function getMeta(tasks) {
 };
 
 function getSelectOptions() {
-	timelineFiles.push(moment().format(dailyNoteFormat));
+	const currentDailyNote = dailyNoteFolder + moment().format(dailyNoteFormat) + ".md"
+	timelineFiles.push(currentDailyNote);
 	timelineFiles = [...new Set(timelineFiles)].sort();
-	var fileSelect = rootNode.querySelector('.fileSelect');
+	const fileSelect = rootNode.querySelector('.fileSelect');
 	timelineFiles.forEach(function(file) {
 		var opt = document.createElement('option');
 		opt.value = file;
-		opt.innerHTML = getFilename(file);
+		
+		// var secondParentFolder = file.split("/")[file.split("/").length - 3] == null ? "" : "… / ";
+		// var parentFolder = file.split("/")[file.split("/").length - 2] == null ? "" : secondParentFolder + file.split("/")[file.split("/").length - 2] + " / ";
+		// var filePath = parentFolder + getFilename(file);
+		
+		var secondParentFolder = file.split("/")[file.split("/").length - 3] == null ? "" : "… / ";
+		var parentFolder = file.split("/")[file.split("/").length - 2] == null ? "" : secondParentFolder + "📂&nbsp;" + file.split("/")[file.split("/").length - 2] + " / ";
+		var filePath = parentFolder + "📄&nbsp;" + getFilename(file);
+		
+		opt.innerHTML =  filePath;
 		opt.title = file;
 		if (select && file == select) {
 			opt.setAttribute('selected', true);
-		} else if (select && select == "todaysDailyNote" && file == moment().format(dailyNoteFormat)) {
+		} else if (select && select == "todaysDailyNote" && file == currentDailyNote) {
 			opt.setAttribute('selected', true);
 		};
 		fileSelect.appendChild(opt);
@@ -287,18 +297,19 @@ function setEvents() {
 		var filePath = rootNode.querySelector('.fileSelect').value;
 		var newTask = rootNode.querySelector('.newTask').value;
 		var abstractFilePath = app.vault.getAbstractFileByPath(filePath);
-		if (abstractFilePath) {
-			app.vault.read(abstractFilePath).then(function(fileText) {
-				app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
-				rootNode.querySelector('.newTask').value = "";
-				rootNode.querySelector('.newTask').blur();
-				new Notice("New task saved!")
-			});
-		} else {
-			// If file doesn't exist
-			var filePath = dailyNoteFolder + filePath + ".md";
-			app.vault.create(filePath, "- [ ] " + newTask);
+		try {
+			if (abstractFilePath) {
+				app.vault.read(abstractFilePath).then(function(fileText) {
+					app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
+				});
+			} else {
+				app.vault.create(filePath, "- [ ] " + newTask);
+			};
+			rootNode.querySelector('.newTask').value = "";
+			rootNode.querySelector('.newTask').blur();
 			new Notice("New task saved!")
+		} catch(err) {
+			new Notice("Something went wrong!")
 		};
 	}));
 	rootNode.querySelector('.fileSelect').addEventListener('change', (() => {
@@ -320,9 +331,9 @@ function setEvents() {
 		if (newTask.includes("recurring ")) { input.value = newTask.replace("recurring", "🔁") };
 		
 		// Dates
-		if (newTask.includes("today")) { input.value = newTask.replace("today", moment().format("YYYY-MM-DD")) };
-		if (newTask.includes("tomorrow")) { input.value = newTask.replace("tomorrow", moment().add(1, "days").format("YYYY-MM-DD")) };
-		if (newTask.includes("yesterday")) { input.value = newTask.replace("yesterday", moment().substract(1, "days").format("YYYY-MM-DD")) };
+		if (newTask.includes("today ")) { input.value = newTask.replace("today", moment().format("YYYY-MM-DD")) };
+		if (newTask.includes("tomorrow ")) { input.value = newTask.replace("tomorrow", moment().add(1, "days").format("YYYY-MM-DD")) };
+		if (newTask.includes("yesterday ")) { input.value = newTask.replace("yesterday", moment().subtract(1, "days").format("YYYY-MM-DD")) };
 		
 		// In X days/weeks/month/years
 		var futureDate = newTask.match(/(in)\W(\d{1,3})\W(days|day|weeks|week|month|years|year) /);
@@ -332,20 +343,25 @@ function setEvents() {
 			var date = moment().add(x, unit).format("YYYY-MM-DD[ ]")
 			input.value = newTask.replace(futureDate[0], date);
 		};
-
-		// Next Weekdays
-		// var weekday = newTask.match(/(monday|tuesday|wednesday|thursday|friday|saturday|sunday) /);
-		// if (weekday) {
-		// 	const today = moment().weekday();
-		// 	const dayINeed = moment().day(weekday[1]);
-		// 	if (today <= dayINeed) { 
-		// 		console.log( moment().isoWeekday(dayINeed) );
-		// 	} else {
-		// 		console.log( moment().add(1, 'weeks').isoWeekday(dayINeed) );
-		// 	};
-		// };
-
+		
+		// Next Weekday
+		var weekday = newTask.match(/(monday|tuesday|wednesday|thursday|friday|saturday|sunday) /);
+		if (weekday) {
+			var weekdays = ["","monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+			const dayINeed = weekdays.indexOf(weekday[1]);
+			if (moment().isoWeekday() < dayINeed) { 
+			  input.value = newTask.replace(weekday[0], moment().isoWeekday(dayINeed).format("YYYY-MM-DD")); 
+			} else {
+			  input.value = newTask.replace(weekday[0], moment().add(1, 'weeks').isoWeekday(dayINeed).format("YYYY-MM-DD"));
+			};
+		};
+		
 		rootNode.querySelector('.newTask').focus();
+	}));
+	rootNode.querySelector('.newTask').addEventListener('keyup', ((e) => {
+		if (e.which === 13) { // Enter key
+			rootNode.querySelector('.ok').click();
+		};
 	}));
 };
 
@@ -362,12 +378,16 @@ function openFile(link, line, col) {
 	
 	app.workspace.openLinkText('', link).then(() => {
 		if (line && col) {
-			const view = app.workspace.activeLeaf.getViewState();
-			view.state.mode = 'source'; // mode = source || preview
-			app.workspace.activeLeaf.setViewState(view);
-			var cmEditor = app.workspace.activeLeaf.view.editor;
-			cmEditor.setSelection({line: parseInt(line), ch: 6},{line: parseInt(line), ch: parseInt(col)})
-			cmEditor.focus();
+			try {
+				const view = app.workspace.activeLeaf.getViewState();
+				view.state.mode = 'source'; // mode = source || preview
+				app.workspace.activeLeaf.setViewState(view);
+				var cmEditor = app.workspace.activeLeaf.view.editor;
+				cmEditor.setSelection({line: parseInt(line), ch: 6},{line: parseInt(line), ch: parseInt(col)})
+				cmEditor.focus();
+			} catch(err) {
+				new Notice("Something went wrong!")
+			};
 		};
 	});
 };
@@ -416,7 +436,7 @@ function momentToRegex(momentFormat) {
 function getTimeline(tasks) {
 	var yearNode;
 	var lastYear = null;
-	var containedTypesPerYear = [];
+	var containedTypesPerYear = null;
 	
 	for (i=0; i<timelineDates.length; i++) {
 		
@@ -432,6 +452,7 @@ function getTimeline(tasks) {
 		
 		// Add Year Section
 		if (year != lastYear) {
+			containedTypesPerYear = [];
 			lastYear = year;
 			yearNode = dv.el("div", "", {cls: "year", attr: {"data-types": ""}})
 			if (moment().format("YYYY") == year) { yearNode.classList.add("current") };
@@ -449,10 +470,10 @@ function getTimeline(tasks) {
 			var scheduledCount = tasksFiltered.filter(t=>t.happens["scheduled"]).length;
 			var doneCount = tasksFiltered.filter(t=>t.happens["done"]).length;
 			var dailynoteCount = tasksFiltered.filter(t=>t.happens["dailynote"]).length;
-			var dailytaskCount = tasksFiltered.filter(t=>t.happens["dailytask"]).length;
 			var processCount = tasksFiltered.filter(t=>t.happens["process"]).length;
 			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["process"] && !t.happens["start"] && !t.happens["overdue"] && !t.happens["unplanned"]).length;
 			var unplannedCount = tasks.filter(t=>t.happens["unplanned"]).length;
+			var allCount = doneCount + todoCount + overdueCount;
 			
 			if (todoCount == 0 && processCount == 0 && overdueCount == 0) {
 				var motivation = "☕️ Wow, looks like an empty day. Relax!"
@@ -479,15 +500,16 @@ function getTimeline(tasks) {
 			} else {
 				var motivation = "💡 Just one small positive thought in the morning can change your whole day."
 			};
-			
+			// Counter
 			var todayContent = "<div class='todayHeader'>Today</div>"
 			todayContent += "<div class='counters'>"
 			todayContent += "<div class='counter' id='todo'><div class='count'>" + todoCount + "</div><div class='label'>To Do</div></div>"
 			todayContent += "<div class='counter' id='overdue'><div class='count'>" + overdueCount + "</div><div class='label'>Overdue</div></div>"
 			todayContent += "<div class='counter' id='unplanned'><div class='count'>" + unplannedCount + "</div><div class='label'>Unplanned</div></div>"
 			todayContent += "</div>"
-			todayContent += "<div class='input'>"
-			todayContent += "<div class='left'><select class='fileSelect'></select><input class='newTask' type='text' placeholder='Take out the trash'/></div>"
+			// Quick Entry panel
+			todayContent += "<div class='quickEntryPanel'>"
+			todayContent += "<div class='left'><select class='fileSelect'></select><input class='newTask' type='text' placeholder='Enter your new tasks here'/></div>"
 			todayContent += "<div class='right'><button class='ok'>"
 			todayContent += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg>'
 			todayContent += "</button></div>"
