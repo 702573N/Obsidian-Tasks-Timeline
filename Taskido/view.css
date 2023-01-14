@@ -283,7 +283,7 @@
 	from { opacity: 1 } 50% { opacity: 0.25 } to { opacity: 1 }
 }
 /* Quick Entry Panel */
-.taskido .input {
+.taskido .quickEntryPanel {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -292,11 +292,11 @@
 	color: var(--text-normal);
 	border-radius: 10px;
 	box-shadow: 0 0 5px 0 rgba(0,0,0,0.1);
-	margin: 0 5px;
+	margin: 0 5px 20px 5px;
 	overflow: hidden;
 	padding: 5px;
 }
-.taskido .input .left {
+.taskido .quickEntryPanel .left {
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
@@ -306,8 +306,9 @@
 	flex-grow: 1;
 	overflow: hidden;
 	border-radius: 5px;
+	padding: 0 5px !important;
 }
-.taskido .input .right {
+.taskido .quickEntryPanel .right {
 	display: block;
 	width: auto;
 	flex-shrink: 1;
@@ -315,37 +316,48 @@
 	overflow: hidden;
 	border-radius: 5px;
 }
-.taskido .input select,
-.taskido .input input,
-.taskido .input button {
+.taskido .quickEntryPanel select,
+.taskido .quickEntryPanel input,
+.taskido .quickEntryPanel button {
 	box-shadow: none !important;
 	border: none !important;
 	background: none !important;
 	border-radius: 0 !important;
 }
-.taskido select {
+.taskido .quickEntryPanel select {
 	height: 15px;
 	width: 100%;
 	font-size: 11px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
-	padding: 0 10px !important;
-	margin: 0 !important;
-	color: var(--text-faint);
+	padding: 0 !important;
+	margin: 2.5px 0 !important;
+	color: var(--text-muted);
+	
+	-webkit-appearance: none;
 }
-.taskido input {
+.taskido .quickEntryPanel select:hover {
+	color: var(--text-normal);
+}
+.taskido .quickEntryPanel select option,
+.taskido s.quickEntryPanel elect optgroup {
+	background: var(--background-primary);
+	font-weight: normal;
+	color: var(--text-normal);
+}
+.taskido .quickEntryPanel input {
 	height: 20px;
 	line-height: 20px;
 	width: 100%;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
-	padding: 0 10px !important;
+	padding: 0 !important;
 	margin: 0 !important;
 	font-size: 14px;
 }
-.taskido .input button {
+.taskido .quickEntryPanel button {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -353,17 +365,17 @@
 	align-items: center;
 	height: 100%;
 	width: auto;
-	padding: 0 10px !important;
+	padding: 0 5px !important;
 	margin: 0 !important;
 }
-.taskido .input svg {
+.taskido .quickEntryPanel svg {
 	height: 18px;
 	width: 18px;
 	stroke-width: 1.75px;
 }
-.taskido .input select:active,
-.taskido .input input:active,
-.taskido .input button:active {
+.taskido .quickEntryPanel select:active,
+.taskido .quickEntryPanel input:active,
+.taskido .quickEntryPanel button:active {
 	border: none !important;
 	box-shadow: none !important;
 	transition: none !important;
