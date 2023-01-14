@@ -184,6 +184,12 @@ inbox: "Task Management/Inbox.md"
 ```
 With this parameter you can set a custom file as your inbox to scratch tasks first before moving them into the correct note file (GTD).
 
+### counterAction:
+```
+counterAction: "focus"
+counterAction: "filter"
+```
+With this parameter you can set a default action on pressing/clicking one of the three counter buttons (To Do, Overdue, Unplanned). By default "focus" is set. On focus the selected tasks get a highlight in task background. On filter all other tasks were hidden.
 ---
 
 ## Note colors
@@ -219,7 +225,7 @@ The tag-autocomplete functionality inside Obsidian makes it possible to quickly 
 
 ## Focussing
 A small separation give focus on today. Three info boxes (To Do, Overdue, Unplanned
-) give you all necessary informations to do your best on today. By clicking on each box, your selected tasks get a highlight to keep focus on. By clicking on the "Today" header you can also hide all other days from timeline.
+) give you all necessary informations to do your best on today. By clicking on each box, your selected tasks get focus. By clicking on the "Today" header you can also hide all other days from timeline.
 
 <img width="358" alt="Bildschirm­foto 2023-01-02 um 12 04 05" src="https://user-images.githubusercontent.com/59178587/210223039-094b6586-fdb4-4628-b9f7-863034ec2b33.png">
 
