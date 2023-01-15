@@ -63,7 +63,7 @@ function getMeta(tasks) {
 		};
 		
 		// Inbox
-		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/(?<!\[)\d{4}\-\d{2}\-\d{2}(?!\])/)) {
+		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/)) {
 			timelineDates.push(moment().format("YYYY-MM-DD"));
 			happens["unplanned"] = moment().format("YYYY-MM-DD");
 			tasks[i].order = 7;
@@ -271,15 +271,9 @@ function getSelectOptions() {
 	timelineFiles.forEach(function(file) {
 		var opt = document.createElement('option');
 		opt.value = file;
-		
-		// var secondParentFolder = file.split("/")[file.split("/").length - 3] == null ? "" : "… / ";
-		// var parentFolder = file.split("/")[file.split("/").length - 2] == null ? "" : secondParentFolder + file.split("/")[file.split("/").length - 2] + " / ";
-		// var filePath = parentFolder + getFilename(file);
-		
 		var secondParentFolder = file.split("/")[file.split("/").length - 3] == null ? "" : "… / ";
 		var parentFolder = file.split("/")[file.split("/").length - 2] == null ? "" : secondParentFolder + "📂&nbsp;" + file.split("/")[file.split("/").length - 2] + " / ";
 		var filePath = parentFolder + "📄&nbsp;" + getFilename(file);
-		
 		opt.innerHTML =  filePath;
 		opt.title = file;
 		if (select && file == select) {
@@ -397,17 +391,6 @@ function setEvents() {
 };
 
 function openFile(link, line, col) {
-	// https://github.com/obsidianmd/obsidian-api/blob/dbfa19ad7aa6557f0ecff962065c3f540bc77e27/obsidian.d.ts#L680
-	// https://marcus.se.net/obsidian-plugin-docs/reference/typescript/classes/Editor
-	// cmEditor.setCursor(parseInt(line), parseInt(col));
-	// var cmEditor = app.workspace.activeLeaf.view.sourceMode.cmEditor;
-	// var cmLine = cmEditor.getLine(parseInt(line));
-	// var cmLine = cmEditor.setLine(parseInt(line));
-	// .is-flashing
-	// app.vault.create(newTitle + ".md", newContent);
-	// app.vault.create(file, content)
-	// const files = this.app.vault.getMarkdownFiles();
-	
 	app.workspace.openLinkText('', link).then(() => {
 		if (line && col) {
 			try {
@@ -424,30 +407,30 @@ function openFile(link, line, col) {
 	});
 };
 
-function completeTask(link, line) {
-	if (line && col) {
-		var result = confirm("Would you like to mark this task as completed?");
-		if (result == true) {
-			try {
-				var abstractFilePath = app.vault.getAbstractFileByPath(link);
-				app.vault.read(abstractFilePath).then(function(fileText) {
+// function completeTask(link, line) {
+// 	if (line && col) {
+// 		var result = confirm("Would you like to mark this task as completed?");
+// 		if (result == true) {
+// 			try {
+// 				var abstractFilePath = app.vault.getAbstractFileByPath(link);
+// 				app.vault.read(abstractFilePath).then(function(fileText) {
 					
-					var lines = fileText.split("\n");
-					for (i=0;i<lines.length;i++) {
-						if (i == line) {
-							console.log(i, lines[i])
-						};
-					};
+// 					var lines = fileText.split("\n");
+// 					for (i=0;i<lines.length;i++) {
+// 						if (i == line) {
+// 							console.log(i, lines[i])
+// 						};
+// 					};
 					
-					// app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
-				});
-				new Notice("Task completed!")
-			} catch(err) {
-				new Notice("Something went wrong!")
-			};
-		};
-	};
-};
+// 					// app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
+// 				});
+// 				new Notice("Task completed!")
+// 			} catch(err) {
+// 				new Notice("Something went wrong!")
+// 			};
+// 		};
+// 	};
+// };
 
 function getFilename(path) {
 	var filename = path.match(/^(?:.*\/)?([^\/]+?|)(?=(?:\.[^\/.]*)?$)/)[1];
