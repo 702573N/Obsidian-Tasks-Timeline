@@ -32,8 +32,9 @@
 	font-size: 24px;
 	font-weight: bold;
 	text-align: center;
-	margin: 10px 0;
+	margin: 10px 5px;
 	cursor: pointer;
+	border-radius: 10px;
 }
 .taskido .details.today {
 	padding: 60px 0;
@@ -296,6 +297,11 @@
 	overflow: hidden;
 	padding: 5px;
 }
+
+.taskido .quickEntryPanel:focus {
+	box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
+}
+
 .taskido .quickEntryPanel .left {
 	display: flex;
 	flex-direction: column;
@@ -391,7 +397,7 @@
 .taskido.overdueFocus .counter#overdue,
 .taskido.overdueFilter .counter#overdue,
 .taskido.unplannedFocus .counter#unplanned,
-.taskido.unplannedFilter .counter#unplanned { color: var(--icon-color-active); }
+.taskido.unplannedFilter .counter#unplanned { color: var(--icon-color-active); background: var(--background-modifier-active-hover); box-shadow: var(--input-shadow); }
 .taskido.noYear .year,
 .taskido.noMotivation .motivation,
 .taskido.noRepeat .repeat,
@@ -416,13 +422,13 @@
 .taskido.todayFocus .details.today { padding: 0; }
 .taskido.todoFocus .details.today .task.due,
 .taskido.todoFocus .details.today .task.scheduled,
-.taskido.todoFocus .details.today .task.dailytask,
+.taskido.todoFocus .details.today .task.process,
 .taskido.overdueFocus .task.overdue,
 .taskido.unplannedFocus .task.unplanned { background: var(--background-modifier-active-hover); }
 /* Filter */
 .taskido.todoFilter .year:not(.current):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
 .taskido.todoFilter .details:not(.today):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
-.taskido.todoFilter .task:not(.due, .scheduled) { display: none; }
+.taskido.todoFilter .task:not(.due, .scheduled, .process) { display: none; }
 .taskido.overdueFilter .year:not(.current):not([data-types*="overdue"]) { display: none; }
 .taskido.overdueFilter .details:not(.today):not([data-types*="overdue"]) { display: none; }
 .taskido.overdueFilter .task:not(.overdue) { display: none; }
