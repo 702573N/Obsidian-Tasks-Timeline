@@ -63,7 +63,7 @@ function getMeta(tasks) {
 		};
 		
 		// Inbox
-		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/(\d{4}\-\d{2}\-\d{2})/)) {
+		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/(?<!\[)\d{4}\-\d{2}\-\d{2}(?!\])/)) {
 			timelineDates.push(moment().format("YYYY-MM-DD"));
 			happens["unplanned"] = moment().format("YYYY-MM-DD");
 			tasks[i].order = 7;
