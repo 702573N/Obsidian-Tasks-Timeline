@@ -6,7 +6,9 @@
 - All your tasks in a clean and simple timeline view
 - Pin all your important notes directly into your timeline
 - Focus today, to do, overdue or unplanned tasks
-- Quick add new tasks to your daily note
+- Quick add new tasks without having to open notes
+- Forward tasks from past days to today
+- Relative dates for quicker classification
 - Custom colors for all your tags and notes
 
 ---
