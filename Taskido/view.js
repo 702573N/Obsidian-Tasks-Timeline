@@ -71,7 +71,7 @@ function getMeta(tasks) {
 		
 		// Daily Notes
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
-		var dailyTaskMatch = taskText.match(/(\d{4}\-\d{2}\-\d{2})/);
+		var dailyTaskMatch = taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/);
 		if (dailyNoteMatch && tasks[i].completed == false) {
 			if(!dailyTaskMatch) {
 				if (carryForwardUnplanned == true) {
