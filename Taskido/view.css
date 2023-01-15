@@ -423,12 +423,13 @@
 .taskido.todoFocus .details.today .task.due,
 .taskido.todoFocus .details.today .task.scheduled,
 .taskido.todoFocus .details.today .task.process,
+.taskido.todoFocus .details.today .task.start,
 .taskido.overdueFocus .task.overdue,
 .taskido.unplannedFocus .task.unplanned { background: var(--background-modifier-active-hover); }
 /* Filter */
 .taskido.todoFilter .year:not(.current):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
 .taskido.todoFilter .details:not(.today):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
-.taskido.todoFilter .task:not(.due, .scheduled, .process) { display: none; }
+.taskido.todoFilter .task:not(.due, .scheduled, .process, .start) { display: none; }
 .taskido.overdueFilter .year:not(.current):not([data-types*="overdue"]) { display: none; }
 .taskido.overdueFilter .details:not(.today):not([data-types*="overdue"]) { display: none; }
 .taskido.overdueFilter .task:not(.overdue) { display: none; }
