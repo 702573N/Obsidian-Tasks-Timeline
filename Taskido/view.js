@@ -95,21 +95,6 @@ function getMeta(tasks) {
 			if ( fieldKey == "due" || fieldKey == "scheduled" || fieldKey == "start" || fieldKey == "completed") {
 				var fieldDate = moment(fieldValue).format("YYYY-MM-DD");
 				if (tasks[i].completed == false) {
-					if ( fieldKey == "due" && fieldDate < moment().format("YYYY-MM-DD") ) {
-						if (carryForwardOverdue == true) {
-							happens["overdue"] = moment().format("YYYY-MM-DD");
-							tasks[i].order = 2;
-							tasks[i].relative = moment(fieldDate).fromNow();
-						} else {
-							happens["overdue"] = fieldDate;
-							tasks[i].order = 2;
-							timelineDates.push(fieldDate);
-						};
-					} else if (fieldKey == "due") {
-						happens["due"] = fieldDate;
-						tasks[i].order = 7;
-						timelineDates.push(fieldDate);
-					};
 					if ( fieldKey == "scheduled" && fieldDate < moment().format("YYYY-MM-DD") ) {
 						happens["process"] = moment().format("YYYY-MM-DD");
 						tasks[i].order = 6;
@@ -126,6 +111,26 @@ function getMeta(tasks) {
 						tasks[i].order = 5;
 						timelineDates.push(fieldDate);
 					};
+					if ( fieldKey == "due" && fieldDate < moment().format("YYYY-MM-DD") ) {
+						if (carryForwardOverdue == true) {
+							happens["overdue"] = moment().format("YYYY-MM-DD");
+							tasks[i].order = 2;
+							tasks[i].relative = moment(fieldDate).fromNow();
+						} else {
+							happens["overdue"] = fieldDate;
+							tasks[i].order = 2;
+							timelineDates.push(fieldDate);
+						};
+					} else if ( fieldKey == "due" && fieldDate == moment().format("YYYY-MM-DD") ) {
+						happens = {}; // Clear Object !!!
+						happens["due"] = fieldDate;
+						tasks[i].order = 7;
+						timelineDates.push(fieldDate);
+					} else if ( fieldKey == "due" && fieldDate > moment().format("YYYY-MM-DD") ) {
+						happens["due"] = fieldDate;
+						tasks[i].order = 7;
+						timelineDates.push(fieldDate);
+					};
 				} else if (tasks[i].completed == true) {
 					if (fieldKey == "completion") {
 						happens["done"] = fieldDate;
@@ -137,27 +142,6 @@ function getMeta(tasks) {
 		};
 		
 		// Tasks Plugin Tasks
-		var dueMatch = taskText.match(/📅 *(\d{4}-\d{2}-\d{2})/);
-		if (dueMatch && tasks[i].completed == false) {
-			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
-			if ( dueMatch[1] < moment().format("YYYY-MM-DD") ) {
-				if (carryForwardOverdue == true) {
-					happens["overdue"] = moment().format("YYYY-MM-DD");
-					tasks[i].order = 2;
-					tasks[i].relative = moment(dueMatch[1]).fromNow();
-				} else {
-					happens["overdue"] = dueMatch[1];
-					tasks[i].order = 2;
-					timelineDates.push(dueMatch[1]);
-				};
-			} else {
-				happens["due"] = dueMatch[1];
-				tasks[i].order = 3;
-				timelineDates.push(dueMatch[1]);
-			};
-		} else if (dueMatch && tasks[i].completed == true) {
-			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
-		};
 		var startMatch = taskText.match(/🛫 *(\d{4}-\d{2}-\d{2})/);
 		if (startMatch && tasks[i].completed == false) {
 			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
@@ -185,6 +169,32 @@ function getMeta(tasks) {
 			};
 		} else if (scheduledMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
+		};
+		var dueMatch = taskText.match(/📅 *(\d{4}-\d{2}-\d{2})/);
+		if (dueMatch && tasks[i].completed == false) {
+			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
+			if ( dueMatch[1] < moment().format("YYYY-MM-DD") ) {
+				if (carryForwardOverdue == true) {
+					happens["overdue"] = moment().format("YYYY-MM-DD");
+					tasks[i].order = 2;
+					tasks[i].relative = moment(dueMatch[1]).fromNow();
+				} else {
+					happens["overdue"] = dueMatch[1];
+					tasks[i].order = 2;
+					timelineDates.push(dueMatch[1]);
+				};
+			} else if ( dueMatch[1] == moment().format("YYYY-MM-DD") ) {
+				happens = {}; // Clear Object !!!
+				happens["due"] = dueMatch[1];
+				tasks[i].order = 3;
+				timelineDates.push(dueMatch[1]);
+			} else if ( dueMatch[1] > moment().format("YYYY-MM-DD") ) {
+				happens["due"] = dueMatch[1];
+				tasks[i].order = 3;
+				timelineDates.push(dueMatch[1]);
+			};
+		} else if (dueMatch && tasks[i].completed == true) {
+			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
 		};
 		var doneMatch = taskText.match(/✅ *(\d{4}-\d{2}-\d{2})/);
 		if (doneMatch && tasks[i].completed == true) {
@@ -287,11 +297,15 @@ function setEvents() {
 	rootNode.querySelector('.todayHeader').addEventListener('click', (() => {
 		rootNode.classList.toggle("todayFocus");
 	}));
-	rootNode.querySelectorAll('.task:not(.star, .add)').forEach(t => t.addEventListener('click', (() => {
+	rootNode.querySelectorAll('.task:not(.star, .add)').forEach(t => t.addEventListener('click', ((e) => {
 		var link = t.getAttribute("data-link");
 		var line = t.getAttribute("data-line");
 		var col = t.getAttribute("data-col");
-		openFile(link, line, col);
+		if (e.target.tagName == "svg") {
+			completeTask(link, line);
+		} else {
+			openFile(link, line, col);
+		};
 	})));
 	rootNode.querySelector('.ok').addEventListener('click', (() => {
 		var filePath = rootNode.querySelector('.fileSelect').value;
@@ -349,10 +363,10 @@ function setEvents() {
 		if (weekday) {
 			var weekdays = ["","monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 			const dayINeed = weekdays.indexOf(weekday[1]);
-			if (moment().isoWeekday() < dayINeed) { 
-			  input.value = newTask.replace(weekday[0], moment().isoWeekday(dayINeed).format("YYYY-MM-DD")); 
+			if (moment().isoWeekday() < dayINeed) {
+			  input.value = newTask.replace(weekday[1], moment().isoWeekday(dayINeed).format("YYYY-MM-DD")); 
 			} else {
-			  input.value = newTask.replace(weekday[0], moment().add(1, 'weeks').isoWeekday(dayINeed).format("YYYY-MM-DD"));
+			  input.value = newTask.replace(weekday[1], moment().add(1, 'weeks').isoWeekday(dayINeed).format("YYYY-MM-DD"));
 			};
 		};
 		
@@ -362,6 +376,12 @@ function setEvents() {
 		if (e.which === 13) { // Enter key
 			rootNode.querySelector('.ok').click();
 		};
+	}));
+	rootNode.querySelector('.newTask').addEventListener('focus', (() => {
+		rootNode.querySelector('.quickEntryPanel').classList.add("focus");
+	}));
+	rootNode.querySelector('.newTask').addEventListener('blur', (() => {
+		rootNode.querySelector('.quickEntryPanel').classList.remove("focus");
 	}));
 };
 
@@ -375,6 +395,7 @@ function openFile(link, line, col) {
 	// .is-flashing
 	// app.vault.create(newTitle + ".md", newContent);
 	// app.vault.create(file, content)
+	// const files = this.app.vault.getMarkdownFiles();
 	
 	app.workspace.openLinkText('', link).then(() => {
 		if (line && col) {
@@ -383,13 +404,41 @@ function openFile(link, line, col) {
 				view.state.mode = 'source'; // mode = source || preview
 				app.workspace.activeLeaf.setViewState(view);
 				var cmEditor = app.workspace.activeLeaf.view.editor;
-				cmEditor.setSelection({line: parseInt(line), ch: 6},{line: parseInt(line), ch: parseInt(col)})
+				cmEditor.setSelection({line: parseInt(line), ch: 6},{line: parseInt(line), ch: parseInt(col)});
 				cmEditor.focus();
 			} catch(err) {
 				new Notice("Something went wrong!")
 			};
 		};
 	});
+};
+
+function completeTask(link, line) {
+	if (line && col) {
+		var result = confirm("Would you like to mark this task as completed?");
+		if (result == true) {
+			try {
+				var abstractFilePath = app.vault.getAbstractFileByPath(link);
+				app.vault.read(abstractFilePath).then(function(fileText) {
+					
+					
+					var lines = fileText.split("\n");
+					for (i=0;i<lines.length;i++) {
+						if (i == line) {
+							console.log(i, lines[i])
+						};
+					};
+					
+					
+					
+					// app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
+				});
+				new Notice("Task completed!")
+			} catch(err) {
+				new Notice("Something went wrong!")
+			};
+		};
+	};
 };
 
 function getFilename(path) {
@@ -471,7 +520,7 @@ function getTimeline(tasks) {
 			var doneCount = tasksFiltered.filter(t=>t.happens["done"]).length;
 			var dailynoteCount = tasksFiltered.filter(t=>t.happens["dailynote"]).length;
 			var processCount = tasksFiltered.filter(t=>t.happens["process"]).length;
-			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["process"] && !t.happens["start"] && !t.happens["overdue"] && !t.happens["unplanned"]).length;
+			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["start"] && !t.happens["overdue"] && !t.happens["unplanned"]).length;
 			var unplannedCount = tasks.filter(t=>t.happens["unplanned"]).length;
 			var allCount = doneCount + todoCount + overdueCount;
 			
