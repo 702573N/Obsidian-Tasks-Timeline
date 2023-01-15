@@ -239,12 +239,12 @@ function getMeta(tasks) {
 
 		// Link Detection
 		while (outerLink = /\[([^\]]+)\]\(([^)]+)\)/g.exec(tasks[i].text)) {
-			tasks[i].text = tasks[i].text.replace(outerLink[0], "<a class='external-link outerLink' href='" + outerLink[2] + "'>" + outerLink[1] + "</a>");
-		};
+ 			tasks[i].text = tasks[i].text.replace(outerLink[0], "<a class='external-link outerLink' href='" + outerLink[2] + "'>" + outerLink[1] + "</a>");
+ 		};
 
-		while (innerLink = /\=\=([^\ ]+)\=\=/g.exec(tasks[i].text)) {
-			tasks[i].text = tasks[i].text.replace(innerLink[0], "<a class='internal-link innerLink' href='" + innerLink[1] + "'>" + innerLink[1] + "</a>");
-		};
+ 		while (innerLink = /\[\[([^\]]+)\]\]/g.exec(tasks[i].text)) {
+ 			tasks[i].text = tasks[i].text.replace(innerLink[0], "<a class='internal-link innerLink' href='" + innerLink[1] + "'>" + innerLink[1] + "</a>");
+ 		};
 		
 		// Markdown Highlights
 		while (mark = /\=\=([^\]]+)\=\=/g.exec(tasks[i].text)) {
@@ -309,7 +309,7 @@ function setEvents() {
 		var line = t.getAttribute("data-line");
 		var col = t.getAttribute("data-col");
 		if (e.target.tagName == "svg") {
-			completeTask(link, line);
+			// completeTask(link, line);
 		} else {
 			openFile(link, line, col);
 		};
@@ -432,15 +432,12 @@ function completeTask(link, line) {
 				var abstractFilePath = app.vault.getAbstractFileByPath(link);
 				app.vault.read(abstractFilePath).then(function(fileText) {
 					
-					
 					var lines = fileText.split("\n");
 					for (i=0;i<lines.length;i++) {
 						if (i == line) {
 							console.log(i, lines[i])
 						};
 					};
-					
-					
 					
 					// app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
 				});
