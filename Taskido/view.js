@@ -317,20 +317,24 @@ function setEvents() {
 	rootNode.querySelector('.ok').addEventListener('click', (() => {
 		var filePath = rootNode.querySelector('.fileSelect').value;
 		var newTask = rootNode.querySelector('.newTask').value;
-		var abstractFilePath = app.vault.getAbstractFileByPath(filePath);
-		try {
-			if (abstractFilePath) {
-				app.vault.read(abstractFilePath).then(function(fileText) {
-					app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
-				});
-			} else {
-				app.vault.create(filePath, "- [ ] " + newTask);
+		if (newTask.length > 1) {
+			try {
+				var abstractFilePath = app.vault.getAbstractFileByPath(filePath);
+				if (abstractFilePath) {
+					app.vault.read(abstractFilePath).then(function(fileText) {
+						app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
+					});
+				} else {
+					app.vault.create(filePath, "- [ ] " + newTask);
+				};
+				rootNode.querySelector('.newTask').value = "";
+				rootNode.querySelector('.newTask').blur();
+				new Notice("New task saved!")
+			} catch(err) {
+				new Notice("Something went wrong!")
 			};
-			rootNode.querySelector('.newTask').value = "";
-			rootNode.querySelector('.newTask').blur();
-			new Notice("New task saved!")
-		} catch(err) {
-			new Notice("Something went wrong!")
+		} else {
+			rootNode.querySelector('.newTask').focus();
 		};
 	}));
 	rootNode.querySelector('.fileSelect').addEventListener('change', (() => {
