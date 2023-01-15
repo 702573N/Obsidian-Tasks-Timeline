@@ -250,6 +250,13 @@ function getMeta(tasks) {
 		while (mark = /\=\=([^\]]+)\=\=/g.exec(tasks[i].text)) {
 			tasks[i].text = tasks[i].text.replace(mark[0], "<mark>" + mark[1] + "</mark>");
 		};
+		
+		// Reminder Syntax
+		var reminderMatch = taskText.match(/⏰ *(\d{4}-\d{2}-\d{2}) *(\d{2}\:\d{2})|⏰ *(\d{4}-\d{2}-\d{2})|(\(\@(\d{4}-\d{2}-\d{2}) *(\d{2}\:\d{2})\))|(\(\@(\d{4}-\d{2}-\d{2})\))/);
+		if (reminderMatch) {
+			tasks[i].text = tasks[i].text.replace(reminderMatch[0], "");
+		};
+		
 		tasks[i].happens = happens;
 	};
 	timelineDates.push(today);
@@ -520,7 +527,7 @@ function getTimeline(tasks) {
 			var doneCount = tasksFiltered.filter(t=>t.happens["done"]).length;
 			var dailynoteCount = tasksFiltered.filter(t=>t.happens["dailynote"]).length;
 			var processCount = tasksFiltered.filter(t=>t.happens["process"]).length;
-			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["start"] && !t.happens["overdue"] && !t.happens["unplanned"]).length;
+			var todoCount = tasksFiltered.filter(t=>!t.completed && !t.happens["overdue"] && !t.happens["unplanned"]).length;
 			var unplannedCount = tasks.filter(t=>t.happens["unplanned"]).length;
 			var allCount = doneCount + todoCount + overdueCount;
 			
