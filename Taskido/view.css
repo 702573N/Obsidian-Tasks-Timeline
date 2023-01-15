@@ -11,7 +11,7 @@
 }
 .taskido .task .innerLink,
 .taskido .task .outerLink {
-	color: var(--icon-color-active) !important;
+	color: var(--interactive-accent) !important;
 	text-decoration: underline !important;
 }
 .taskido .year {
@@ -144,7 +144,7 @@
 	content: "";
 	height: 100%;
 	width: 1px;
-	background: var(--icon-color-active);
+	background: var(--interactive-accent);
 	margin: 5px 0;
 }
 .taskido .task.done .file {
@@ -183,7 +183,7 @@
 }
 .taskido .timeline .icon {
 	text-align: center;
-	color: var(--icon-color-active);
+	color: var(--interactive-accent);
 	height: 22px;
 }
 .taskido .timeline .icon svg {
@@ -397,7 +397,7 @@
 .taskido.overdueFocus .counter#overdue,
 .taskido.overdueFilter .counter#overdue,
 .taskido.unplannedFocus .counter#unplanned,
-.taskido.unplannedFilter .counter#unplanned { color: var(--icon-color-active); background: var(--background-modifier-active-hover); box-shadow: var(--input-shadow); }
+.taskido.unplannedFilter .counter#unplanned { color: var(--interactive-accent); background: hsla(var(--interactive-accent-hsl), 0.2); box-shadow: var(--input-shadow); }
 .taskido.noYear .year,
 .taskido.noMotivation .motivation,
 .taskido.noRepeat .repeat,
@@ -425,7 +425,7 @@
 .taskido.todoFocus .details.today .task.process,
 .taskido.todoFocus .details.today .task.start,
 .taskido.overdueFocus .task.overdue,
-.taskido.unplannedFocus .task.unplanned { background: var(--background-modifier-active-hover); }
+.taskido.unplannedFocus .task.unplanned { background: hsla(var(--interactive-accent-hsl), 0.2); }
 /* Filter */
 .taskido.todoFilter .year:not(.current):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
 .taskido.todoFilter .details:not(.today):not([data-types*="due"][data-types*="scheduled"][data-types*="overdue"]) { display: none; }
