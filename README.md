@@ -9,6 +9,7 @@
 - Quick add new tasks without having to open notes
 - Forward tasks from past days to today
 - Relative dates for quicker classification
+- Scratch tasks to your inbox for better time management
 - Custom colors for all your tags and notes
 
 ---
@@ -175,16 +176,15 @@ With this parameter you can set a custom date format with moment.js syntax. By d
 
 ### select:
 ```
-select: "todaysDailyNote"
 select: "Task Management/Inbox.md"
 ```
-With this parameter you can set a default file selection for the quick entry panel.
+With this parameter you can set a default file selection for the quick entry panel. By default Taskido select the daily note from today, even if this does not yet exist. By pushing a task into it, the daily note is created automatically.
 
 ### inbox:
 ```
 inbox: "Task Management/Inbox.md"
 ```
-With this parameter you can set a custom file as your inbox to scratch tasks first before moving them into the correct note file (GTD).
+With this parameter you can set a custom file as your Inbox to scratch tasks first before moving them into the correct note file (GTD). All tasks from within this file are listed on today, even if the tasks have not yet been assigned a date at all. In this way, tasks can be recorded quickly without having to be fully formulated. So you can return to your actual activities and complete the follow-up of the tasks at a later and more appropriate time.
 
 ### counterAction:
 ```
