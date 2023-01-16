@@ -1,4 +1,4 @@
-let {pages, inbox, select, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
+let {pages, inbox, select, taskfiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -6,6 +6,8 @@ if (dailyNoteFormat) { if (dailyNoteFormat.match(/[|\\YMDWwd.,-: \[\]]/g).length
 
 // Get, Set, Eval Pages
 if (pages=="") { var tasks = dv.pages().file.tasks } else { if (pages.startsWith("dv.pages")) { var tasks = eval(pages) } else { var tasks = dv.pages(pages).file.tasks } };
+if (!taskfiles) { taskfiles = [...new Set(dv.pages().file.map(f=>f.tasks.filter(t=>!t.completed)).path)].sort(); } else { if (taskfiles.startsWith("dv.pages")) { taskfiles = eval(taskfiles) } else { taskfiles = dv.pages(taskfiles).file.path } };
+
 if (!options) {options = ""};
 if (!dailyNoteFolder) {dailyNoteFolder = ""} else {dailyNoteFolder = dailyNoteFolder+"/"};
 if (!dailyNoteFormat) {dailyNoteFormat = "YYYY-MM-DD"};
@@ -16,7 +18,6 @@ if (!dateFormat) {dateFormat = "ddd, MMM D"};
 if (!select) {select = "todaysDailyNote"};
 
 // Variables
-var timelineFiles = [];
 var timelineDates = [];
 var timelineNotes = dv.pages().file.filter(f=>f.starred == true && timelineDates.push(moment(f.cday.toString()).format("YYYY-MM-DD")) );
 var tid = (new Date()).getTime();
@@ -56,18 +57,12 @@ function getMeta(tasks) {
 		var taskFile = getFilename(tasks[i].path);
 		var filePath = tasks[i].link.path;
 		
-		// Fill timelineFiles array with open task files
-		if (tasks[i].completed == false) {
-			timelineFiles.push(filePath);
-			timelineFiles = [...new Set(timelineFiles)].sort();
-		};
-		
 		// Inbox
 		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/)) {
 			timelineDates.push(moment().format("YYYY-MM-DD"));
 			happens["unplanned"] = moment().format("YYYY-MM-DD");
 			tasks[i].order = 7;
-		};
+		}
 		
 		// Daily Notes
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
@@ -264,11 +259,14 @@ function getMeta(tasks) {
 };
 
 function getSelectOptions() {
+	// Push daily note and Inbox files
 	const currentDailyNote = dailyNoteFolder + moment().format(dailyNoteFormat) + ".md"
-	timelineFiles.push(currentDailyNote);
-	timelineFiles = [...new Set(timelineFiles)].sort();
+	taskfiles.push(currentDailyNote);
+	if (inbox) {taskfiles.push(inbox)};
+	taskfiles = [...new Set(taskfiles)].sort();
+	// Loop files
 	const fileSelect = rootNode.querySelector('.fileSelect');
-	timelineFiles.forEach(function(file) {
+	taskfiles.forEach(function(file) {
 		var opt = document.createElement('option');
 		opt.value = file;
 		var secondParentFolder = file.split("/")[file.split("/").length - 3] == null ? "" : "… / ";
@@ -302,9 +300,17 @@ function setEvents() {
 		var link = t.getAttribute("data-link");
 		var line = t.getAttribute("data-line");
 		var col = t.getAttribute("data-col");
-		if (e.target.tagName == "svg") {
-			// completeTask(link, line);
+		if (e.target.closest(".task .tag")) {
+			// Tag
+		} else if (e.target.closest(".timeline .icon")) {
+			// Check
+			var task = e.target.closest(".task");
+			var icon = e.target.closest(".timeline .icon");
+			task.className = "task done";
+			icon.innerHTML = doneIcon;
+			completeTask(link, line, col);
 		} else {
+			// File
 			openFile(link, line, col);
 		};
 	})));
@@ -407,30 +413,26 @@ function openFile(link, line, col) {
 	});
 };
 
-// function completeTask(link, line) {
-// 	if (line && col) {
-// 		var result = confirm("Would you like to mark this task as completed?");
-// 		if (result == true) {
-// 			try {
-// 				var abstractFilePath = app.vault.getAbstractFileByPath(link);
-// 				app.vault.read(abstractFilePath).then(function(fileText) {
-					
-// 					var lines = fileText.split("\n");
-// 					for (i=0;i<lines.length;i++) {
-// 						if (i == line) {
-// 							console.log(i, lines[i])
-// 						};
-// 					};
-					
-// 					// app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
-// 				});
-// 				new Notice("Task completed!")
-// 			} catch(err) {
-// 				new Notice("Something went wrong!")
-// 			};
-// 		};
-// 	};
-// };
+function completeTask(link, line, col) {
+	app.workspace.openLinkText('', link).then(() => {
+		if (line && col) {
+			try {
+				const view = app.workspace.activeLeaf.getViewState();
+				view.state.mode = 'source'; // mode = source || preview
+				app.workspace.activeLeaf.setViewState(view);
+				var cmEditor = app.workspace.activeLeaf.view.editor;
+				var cmLine = cmEditor.getLine(parseInt(line));
+				if (cmLine.includes("🔁")) {var addRange = 1} else {var addRange = 0};
+				cmEditor.setCursor(parseInt(line), parseInt(col));
+				app.commands.executeCommandById('obsidian-tasks-plugin:toggle-done');
+				cmEditor.setSelection({line: parseInt(line) + addRange, ch: 6},{line: parseInt(line) + addRange, ch: parseInt(col) + 13});
+				cmEditor.focus();
+			} catch(err) {
+				new Notice("Something went wrong!")
+			};
+		};
+	});
+};
 
 function getFilename(path) {
 	var filename = path.match(/^(?:.*\/)?([^\/]+?|)(?=(?:\.[^\/.]*)?$)/)[1];
