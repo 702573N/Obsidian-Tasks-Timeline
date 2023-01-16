@@ -284,3 +284,9 @@ in 3 weeks
 or
 in 1 year
 ```
+
+---
+
+## Pin notes
+
+In Taskido you can pin custom notes to your timeline. The cdate (creation date) is the used date for pinning. To pin a note you have to mark it as starred with the Obsidian starring functionality. If you don't like that feature, you can hide all your starred notes from the timeline by entering 'noStar' inside the options parameter.
