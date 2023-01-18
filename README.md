@@ -4,8 +4,7 @@
 <p align="center"><img width="400" alt="Semi_Transparent" src="https://user-images.githubusercontent.com/59178587/210307060-5ed916ee-819d-46b1-9a5e-efdd15728957.png"></p>
 
 - All your tasks in a clean and simple timeline view
-- Pin all your important notes directly into your timeline
-- Focus today, to do, overdue or unplanned tasks
+- Focus today and filter to do, overdue or unplanned tasks
 - Quick add new tasks without having to open notes
 - Forward tasks from past days to today
 - Relative dates for quicker classification
