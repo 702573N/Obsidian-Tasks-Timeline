@@ -92,9 +92,9 @@ options: "noRelative"
 options: "noYear"
 options: "noFile"
 options: "noInfo"
-options: "noStar"
 options: "noAnimation"
 options: "noQuickEntry"
+options: "noDone"
 ```
 
 You can combine all of these parameters:
@@ -103,15 +103,12 @@ You can combine all of these parameters:
 options: "noMotivations noStar noAnimation"
 ```
 
-With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, starred notes pinned to timeline, animations, or the quick entry panel.
+With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, animations, or the quick entry panel.
 
 ```
 options: "todayFocus"
-options: "todoFocus"
-options: "overdueFocus"
-options: "unplannedFocus"
 ```
-With this options you can set a default focus after open the timeline.
+With this option you can set default focus on today after open the timeline.
 
 ```
 options: "todoFilter"
@@ -141,14 +138,9 @@ globalTaskFilter: "#task"
 ```
 Set a global task filter to hide from task text/description inside tasks-calendar.
 
-### done:
-```
-done: true
-```
-By default all completed tasks are ignored except the today ones. By entering this paramter, you get a long list with absolutely all tasks. However, this is not recommended.
-
 ### sort:
 ```
+sort: "t=>t.order"
 sort: "t=>t.text"
 sort: "t=>t.completed"
 sort: "t=>t.priority"
@@ -186,12 +178,14 @@ inbox: "Task Management/Inbox.md"
 ```
 With this parameter you can set a custom file as your Inbox to scratch tasks first before moving them into the correct note file (GTD). All tasks from within this file are listed on today, even if the tasks have not yet been assigned a date at all. In this way, tasks can be recorded quickly without having to be fully formulated. So you can return to your actual activities and complete the follow-up of the tasks at a later and more appropriate time.
 
-### counterAction:
+### taskFiles:
 ```
-counterAction: "focus"
-counterAction: "filter"
+taskFiles: "" => files with uncompleted tasks (set by default without declaring this parameter)
+taskFiles: "#taskido" => files with tag #taskido
+taskFiles: '"Task Management/Work"' => files in folder Task Management
+taskFiles: '"Task Management" or #taskido' files in folder Task Management or files with tag #taskido
 ```
-With this parameter you can set a default action on pressing/clicking one of the three counter buttons (To Do, Overdue, Unplanned). By default "focus" is set. On focus the selected tasks get a highlight in task background. On filter all other tasks were hidden.
+With this parameter you can select files to show up inside quick entry select box.
 
 ---
 
@@ -226,9 +220,9 @@ The tag-autocomplete functionality inside Obsidian makes it possible to quickly 
 
 ---
 
-## Focussing
+## Filter
 A small separation give focus on today. Three info boxes (To Do, Overdue, Unplanned
-) give you all necessary informations to do your best on today. By clicking on each box, your selected tasks get focus. By clicking on the "Today" header you can also hide all other days from timeline.
+) give you all necessary informations to do your best on today. By clicking on each box, your selected tasks get filtered. By clicking on the "Today" header you can also hide all other days from timeline.
 
 <img width="358" alt="Bildschirm­foto 2023-01-02 um 12 04 05" src="https://user-images.githubusercontent.com/59178587/210223039-094b6586-fdb4-4628-b9f7-863034ec2b33.png">
 
@@ -286,7 +280,3 @@ in 1 year
 ```
 
 ---
-
-## Pin notes
-
-In Taskido you can pin custom notes to your timeline. The cdate (creation date) is the used date for pinning. To pin a note you have to mark it as starred with the Obsidian starring functionality. If you don't like that feature, you can hide all your starred notes from the timeline by entering 'noStar' inside the options parameter.
