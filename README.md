@@ -182,6 +182,7 @@ With this parameter you can set a custom file as your Inbox to scratch tasks fir
 taskFiles: "" => files with uncompleted tasks (set by default without declaring this parameter)
 taskFiles: "#taskido" => files with tag #taskido
 taskFiles: '"Task Management/Work"' => files in folder Task Management
+taskFiles: '("Task Management" and -"Task Management/Archive")' => folder Task Management without folder Task Management/Archive
 taskFiles: '"Task Management" or #taskido' files in folder Task Management or files with tag #taskido
 ```
 With this parameter you can select files to show up inside quick entry select box.
