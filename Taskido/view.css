@@ -297,11 +297,6 @@
 	overflow: hidden;
 	padding: 5px;
 }
-
-.taskido .quickEntryPanel:focus {
-	box-shadow: 0 0 0 2px var(--background-modifier-border-focus);
-}
-
 .taskido .quickEntryPanel .left {
 	display: flex;
 	flex-direction: column;
@@ -340,15 +335,15 @@
 	padding: 0 !important;
 	margin: 2.5px 0 !important;
 	color: var(--text-muted);
-	
-	-webkit-appearance: none;
+	/*-webkit-appearance: none;*/
 }
 .taskido .quickEntryPanel select:hover {
 	color: var(--text-normal);
 }
 .taskido .quickEntryPanel select option,
-.taskido s.quickEntryPanel elect optgroup {
+.taskido .quickEntryPanel select optgroup {
 	background: var(--background-primary);
+	/*background: var(--background-modifier-form-field);*/
 	font-weight: normal;
 	color: var(--text-normal);
 }
@@ -406,14 +401,9 @@
 .taskido.noAdd .add,
 .taskido.noFile .task:not(.star, .add) .line:nth-child(1),
 .taskido.noInfo .task .line:nth-child(2),
-.taskido.noStar .year[data-types="star"],
-.taskido.noStar .details[data-types="star"],
-.taskido.noStar .task.star,
 .taskido.noDone .year[data-types="done"],
 .taskido.noDone .details[data-types="done"],
 .taskido.noDone .task.done,
-.taskido.noDone.noStar .year[data-types="done,star"],
-.taskido.noDone.noStar .details[data-types="done,star"],
 .taskido.noRelative .relative,
 .taskido.noQuickEntry .input { display: none !important; }
 /* Focus */
