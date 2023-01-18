@@ -1,4 +1,4 @@
-let {pages, inbox, select, taskfiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, counterAction, done, sort, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
+let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -6,20 +6,17 @@ if (dailyNoteFormat) { if (dailyNoteFormat.match(/[|\\YMDWwd.,-: \[\]]/g).length
 
 // Get, Set, Eval Pages
 if (pages=="") { var tasks = dv.pages().file.tasks } else { if (pages.startsWith("dv.pages")) { var tasks = eval(pages) } else { var tasks = dv.pages(pages).file.tasks } };
-if (!taskfiles) { taskfiles = [...new Set(dv.pages().file.map(f=>f.tasks.filter(t=>!t.completed)).path)].sort(); } else { if (taskfiles.startsWith("dv.pages")) { taskfiles = eval(taskfiles) } else { taskfiles = dv.pages(taskfiles).file.path } };
-
+if (!taskFiles) { taskFiles = [...new Set(dv.pages().file.map(f=>f.tasks.filter(t=>!t.completed)).path)].sort(); } else { taskFiles = [...new Set(dv.pagePaths(taskFiles))].sort() };
 if (!options) {options = ""};
 if (!dailyNoteFolder) {dailyNoteFolder = ""} else {dailyNoteFolder = dailyNoteFolder+"/"};
 if (!dailyNoteFormat) {dailyNoteFormat = "YYYY-MM-DD"};
-var taskOrder = ["done", "overdue", "due", "scheduled", "start", "process", "unplanned", "star"]
-if (!sort) {sort = "t => t.order"};
-if (!counterAction) {counterAction = "Focus"} else { counterAction = counterAction[0].toUpperCase() + counterAction.slice(1);};
+if (!taskOrder) {taskOrder = ["overdue", "due", "scheduled", "start", "process", "unplanned","done"]};
+if (!sort) {sort = "t=>t.order"};
 if (!dateFormat) {dateFormat = "ddd, MMM D"};
-if (!select) {select = "todaysDailyNote"};
+if (!select) {select = "dailyNote"};
 
 // Variables
 var timelineDates = [];
-var timelineNotes = dv.pages().file.filter(f=>f.starred == true && timelineDates.push(moment(f.cday.toString()).format("YYYY-MM-DD")) );
 var tid = (new Date()).getTime();
 var today = moment().format("YYYY-MM-DD");
 var dailyNoteRegEx = momentToRegex(dailyNoteFormat);
@@ -40,7 +37,6 @@ var addIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" vi
 var tagIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path><path d="M7 7h.01"></path></svg>';
 var repeatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>';
 var priorityIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
-var starIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
 var forwardIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>';
 
 // Initialze
@@ -62,6 +58,7 @@ function getMeta(tasks) {
 			timelineDates.push(moment().format("YYYY-MM-DD"));
 			happens["unplanned"] = moment().format("YYYY-MM-DD");
 			tasks[i].order = 7;
+			tasks[i].order = taskOrder.indexOf("unplanned");
 		}
 		
 		// Daily Notes
@@ -78,6 +75,7 @@ function getMeta(tasks) {
 					timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
 					happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
 					tasks[i].order = 7;
+					tasks[i].order = taskOrder.indexOf("unplanned");
 				};
 			};
 		};
@@ -93,6 +91,7 @@ function getMeta(tasks) {
 					if ( fieldKey == "scheduled" && fieldDate < moment().format("YYYY-MM-DD") ) {
 						happens["process"] = moment().format("YYYY-MM-DD");
 						tasks[i].order = 6;
+						tasks[i].order = taskOrder.indexOf("process");
 					} else if (fieldKey == "scheduled") {
 						happens["scheduled"] = fieldDate;
 						tasks[i].order = 4;
@@ -104,32 +103,38 @@ function getMeta(tasks) {
 					} else if (fieldKey == "start") {
 						happens["start"] = fieldDate;
 						tasks[i].order = 5;
+						tasks[i].order = taskOrder.indexOf("start");
 						timelineDates.push(fieldDate);
 					};
 					if ( fieldKey == "due" && fieldDate < moment().format("YYYY-MM-DD") ) {
 						if (carryForwardOverdue == true) {
 							happens["overdue"] = moment().format("YYYY-MM-DD");
 							tasks[i].order = 2;
+							tasks[i].order = taskOrder.indexOf("overdue");
 							tasks[i].relative = moment(fieldDate).fromNow();
 						} else {
 							happens["overdue"] = fieldDate;
 							tasks[i].order = 2;
+							tasks[i].order = taskOrder.indexOf("overdue");
 							timelineDates.push(fieldDate);
 						};
 					} else if ( fieldKey == "due" && fieldDate == moment().format("YYYY-MM-DD") ) {
 						happens = {}; // Clear Object !!!
 						happens["due"] = fieldDate;
 						tasks[i].order = 7;
+						tasks[i].order = taskOrder.indexOf("due");
 						timelineDates.push(fieldDate);
 					} else if ( fieldKey == "due" && fieldDate > moment().format("YYYY-MM-DD") ) {
 						happens["due"] = fieldDate;
 						tasks[i].order = 7;
+						tasks[i].order = taskOrder.indexOf("due");
 						timelineDates.push(fieldDate);
 					};
 				} else if (tasks[i].completed == true) {
 					if (fieldKey == "completion") {
 						happens["done"] = fieldDate;
 						tasks[i].order = 1;
+						tasks[i].order = taskOrder.indexOf("done");
 					};
 				};
 			};
@@ -143,9 +148,11 @@ function getMeta(tasks) {
 			if ( startMatch[1] < moment().format("YYYY-MM-DD") ) {
 				happens["process"] = moment().format("YYYY-MM-DD");
 				tasks[i].order = 6;
+				tasks[i].order = taskOrder.indexOf("process");
 			} else {
 				happens["start"] = startMatch[1];
 				tasks[i].order = 8;
+				tasks[i].order = taskOrder.indexOf("start");
 				timelineDates.push(startMatch[1]);
 			};
 		} else if (startMatch && tasks[i].completed == true) {
@@ -157,9 +164,11 @@ function getMeta(tasks) {
 			if ( scheduledMatch[1] < moment().format("YYYY-MM-DD") ) {
 				happens["process"] = moment().format("YYYY-MM-DD");
 				tasks[i].order = 6;
+				tasks[i].order = taskOrder.indexOf("process");
 			} else {
 				happens["scheduled"] = scheduledMatch[1];
 				tasks[i].order = 4;
+				tasks[i].order = taskOrder.indexOf("scheduled");
 				timelineDates.push(scheduledMatch[1]);
 			};
 		} else if (scheduledMatch && tasks[i].completed == true) {
@@ -172,20 +181,24 @@ function getMeta(tasks) {
 				if (carryForwardOverdue == true) {
 					happens["overdue"] = moment().format("YYYY-MM-DD");
 					tasks[i].order = 2;
+					tasks[i].order = taskOrder.indexOf("overdue");
 					tasks[i].relative = moment(dueMatch[1]).fromNow();
 				} else {
 					happens["overdue"] = dueMatch[1];
 					tasks[i].order = 2;
+					tasks[i].order = taskOrder.indexOf("overdue");
 					timelineDates.push(dueMatch[1]);
 				};
 			} else if ( dueMatch[1] == moment().format("YYYY-MM-DD") ) {
 				happens = {}; // Clear Object !!!
 				happens["due"] = dueMatch[1];
 				tasks[i].order = 3;
+				tasks[i].order = taskOrder.indexOf("due");
 				timelineDates.push(dueMatch[1]);
 			} else if ( dueMatch[1] > moment().format("YYYY-MM-DD") ) {
 				happens["due"] = dueMatch[1];
 				tasks[i].order = 3;
+				tasks[i].order = taskOrder.indexOf("due");
 				timelineDates.push(dueMatch[1]);
 			};
 		} else if (dueMatch && tasks[i].completed == true) {
@@ -198,6 +211,7 @@ function getMeta(tasks) {
 				timelineDates.push(doneMatch[1]);
 				happens["done"] = doneMatch[1];
 				tasks[i].order = 1;
+				tasks[i].order = taskOrder.indexOf("done");
 			};
 		};
 		var repeatMatch = taskText.match(/🔁 ?([a-zA-Z0-9, !]+)/)
@@ -260,13 +274,13 @@ function getMeta(tasks) {
 
 function getSelectOptions() {
 	// Push daily note and Inbox files
-	const currentDailyNote = dailyNoteFolder + moment().format(dailyNoteFormat) + ".md"
-	taskfiles.push(currentDailyNote);
-	if (inbox) {taskfiles.push(inbox)};
-	taskfiles = [...new Set(taskfiles)].sort();
+	const currentDailyNote = dailyNoteFolder + moment().format(dailyNoteFormat) + ".md";
+	taskFiles.push(currentDailyNote);
+	if (inbox) {taskFiles.push(inbox)};
+	taskFiles = [...new Set(taskFiles)].sort();
 	// Loop files
 	const fileSelect = rootNode.querySelector('.fileSelect');
-	taskfiles.forEach(function(file) {
+	taskFiles.forEach(function(file) {
 		var opt = document.createElement('option');
 		opt.value = file;
 		var secondParentFolder = file.split("/")[file.split("/").length - 3] == null ? "" : "… / ";
@@ -276,7 +290,7 @@ function getSelectOptions() {
 		opt.title = file;
 		if (select && file == select) {
 			opt.setAttribute('selected', true);
-		} else if (select && select == "todaysDailyNote" && file == currentDailyNote) {
+		} else if (select && select == "dailyNote" && file == currentDailyNote) {
 			opt.setAttribute('selected', true);
 		};
 		fileSelect.appendChild(opt);
@@ -285,13 +299,13 @@ function getSelectOptions() {
 
 function setEvents() {
 	rootNode.querySelectorAll('.counter').forEach(cnt => cnt.addEventListener('click', (() => {
-		var activeFocus = Array.from(rootNode.classList).filter(c=>c.endsWith(counterAction) && !c.startsWith("today"));
-		if (activeFocus == cnt.id+counterAction) {
+		var activeFocus = Array.from(rootNode.classList).filter(c=>c.endsWith("Filter") && !c.startsWith("today"));
+		if (activeFocus == cnt.id+"Filter") {
 			rootNode.classList.remove(activeFocus);
 			return false;
 		};
-		rootNode.classList.remove.apply(rootNode.classList, Array.from(rootNode.classList).filter(c=>c.endsWith(counterAction) && !c.startsWith("today")));
-		rootNode.classList.add(cnt.id+counterAction);
+		rootNode.classList.remove.apply(rootNode.classList, Array.from(rootNode.classList).filter(c=>c.endsWith("Filter") && !c.startsWith("today")));
+		rootNode.classList.add(cnt.id+"Filter");
 	})));
 	rootNode.querySelector('.todayHeader').addEventListener('click', (() => {
 		rootNode.classList.toggle("todayFocus");
@@ -483,7 +497,6 @@ function getTimeline(tasks) {
 	for (i=0; i<timelineDates.length; i++) {
 		
 		// Variables
-		var notesFiltered = timelineNotes.filter(n=>moment(n.cday.toString()).format("YYYY-MM-DD") == timelineDates[i]);
 		var tasksFiltered = tasks.filter(t=>Object.values(t.happens).includes(timelineDates[i].toString())).sort(eval(sort));
 		var relative = moment(timelineDates[i].toString()).fromNow();
 		var date = moment(timelineDates[i].toString()).format(dateFormat);
@@ -598,13 +611,6 @@ function getTimeline(tasks) {
 			
 			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><a class='internal-link' href='" + link + "'><div class='file'>" + file + "</div></a></div><div class='line'>" + info + "</div><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a></div></div>";
 			content += task;
-		});
-		
-		notesFiltered.forEach(function(note) {
-			var star = "<a class='internal-link' href='" + note.path + "'><div class='task star'><div class='timeline'><div class='icon'>" + starIcon + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><div class='file'>" + note.name + "</div></div><div class='line'></div><div class='content'></div></div></div></a>";
-			content += star;
-			containedTypesPerDay.push("star");
-			containedTypesPerYear.push("star");
 		});
 
 		// Add Task For Today
