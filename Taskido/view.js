@@ -44,7 +44,6 @@ getMeta(tasks);
 getTimeline(tasks);
 getSelectOptions();
 setEvents();
-
 function getMeta(tasks) {
 	
 	for (i=0;i<tasks.length;i++) {
@@ -57,7 +56,6 @@ function getMeta(tasks) {
 		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/)) {
 			timelineDates.push(moment().format("YYYY-MM-DD"));
 			happens["unplanned"] = moment().format("YYYY-MM-DD");
-			tasks[i].order = 7;
 			tasks[i].order = taskOrder.indexOf("unplanned");
 		}
 		
@@ -69,12 +67,11 @@ function getMeta(tasks) {
 				if (carryForwardUnplanned == true) {
 					timelineDates.push(moment().format("YYYY-MM-DD"));
 					happens["unplanned"] = moment().format("YYYY-MM-DD");
-					tasks[i].order = 7;
+					tasks[i].order = taskOrder.indexOf("unplanned");
 					tasks[i].relative = moment(dailyNoteMatch[1], dailyNoteFormat).fromNow();
 				} else {
 					timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
 					happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
-					tasks[i].order = 7;
 					tasks[i].order = taskOrder.indexOf("unplanned");
 				};
 			};
@@ -90,50 +87,44 @@ function getMeta(tasks) {
 				if (tasks[i].completed == false) {
 					if ( fieldKey == "scheduled" && fieldDate < moment().format("YYYY-MM-DD") ) {
 						happens["process"] = moment().format("YYYY-MM-DD");
-						tasks[i].order = 6;
 						tasks[i].order = taskOrder.indexOf("process");
 					} else if (fieldKey == "scheduled") {
 						happens["scheduled"] = fieldDate;
-						tasks[i].order = 4;
+						tasks[i].order = taskOrder.indexOf("scheduled");
 						timelineDates.push(fieldDate);
 					};
 					if ( fieldKey == "start" && fieldDate < moment().format("YYYY-MM-DD") ) {
 						happens["process"] = moment().format("YYYY-MM-DD");
-						tasks[i].order = 6;
+						tasks[i].order = taskOrder.indexOf("process");
+						scheduled
 					} else if (fieldKey == "start") {
 						happens["start"] = fieldDate;
-						tasks[i].order = 5;
 						tasks[i].order = taskOrder.indexOf("start");
 						timelineDates.push(fieldDate);
 					};
 					if ( fieldKey == "due" && fieldDate < moment().format("YYYY-MM-DD") ) {
 						if (carryForwardOverdue == true) {
 							happens["overdue"] = moment().format("YYYY-MM-DD");
-							tasks[i].order = 2;
 							tasks[i].order = taskOrder.indexOf("overdue");
 							tasks[i].relative = moment(fieldDate).fromNow();
 						} else {
 							happens["overdue"] = fieldDate;
-							tasks[i].order = 2;
 							tasks[i].order = taskOrder.indexOf("overdue");
 							timelineDates.push(fieldDate);
 						};
 					} else if ( fieldKey == "due" && fieldDate == moment().format("YYYY-MM-DD") ) {
 						happens = {}; // Clear Object !!!
 						happens["due"] = fieldDate;
-						tasks[i].order = 7;
 						tasks[i].order = taskOrder.indexOf("due");
 						timelineDates.push(fieldDate);
 					} else if ( fieldKey == "due" && fieldDate > moment().format("YYYY-MM-DD") ) {
 						happens["due"] = fieldDate;
-						tasks[i].order = 7;
 						tasks[i].order = taskOrder.indexOf("due");
 						timelineDates.push(fieldDate);
 					};
 				} else if (tasks[i].completed == true) {
 					if (fieldKey == "completion") {
 						happens["done"] = fieldDate;
-						tasks[i].order = 1;
 						tasks[i].order = taskOrder.indexOf("done");
 					};
 				};
