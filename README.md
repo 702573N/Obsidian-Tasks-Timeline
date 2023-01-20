@@ -48,7 +48,7 @@ Although I initially developed the Obsidian Tasks Calendar, I now work exclusive
     
     For example...
     
-    dv.view("taskido", {pages: "", select: "Task Management/Inbox.md", inbox: "Task Management/Inbox.md", dailyNoteFolder: "Daily Notes", options: "noMotivation noStar noAnimation"})
+    dv.view("taskido", {pages: "", select: "Task Management/Inbox.md", inbox: "Task Management/Inbox.md", dailyNoteFolder: "Daily Notes", options: "noMotivation noAnimation"})
     
     To get a little structure you yan also write...
     
@@ -57,7 +57,7 @@ Although I initially developed the Obsidian Tasks Calendar, I now work exclusive
         select: "Task Management/Inbox.md", 
         inbox: "Task Management/Inbox.md", 
         dailyNoteFolder: "Daily Notes", 
-        options: "noMotivation noStar noAnimation"
+        options: "noMotivation noAnimation"
     })
     ```
 
