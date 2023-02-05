@@ -123,6 +123,7 @@ options: "noMotivations noAnimation compact"
 ```
 All options can be combined with each other as desired.
 
+### Focus/Filter options
 ```
 options: "todayFocus"
 ```
