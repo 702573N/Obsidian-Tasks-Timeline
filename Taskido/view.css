@@ -101,11 +101,12 @@
 	white-space: nowrap;
 }
 .taskido .relative {
-	color: var(--text-faint);
+	color: var(--text-normal);
 	font-weight: normal;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	font-size: 9px;
 }
 .taskido .task {
 	display: flex;
@@ -438,6 +439,6 @@
 .taskido.unplannedFilter .task:not(.unplanned) { display: none; }
 /* Style */
 .taskido.compact .task .info { order: 2 !important; }
-.taskido.compact .task .line:not(.info) .file { display: none !important; }
+.taskido.compact .task:not(.add) .line:not(.info) .file { display: none !important; }
 .taskido.compact .task .content { order: 1 !important; font-weight: bold !important; }
 .taskido.compact .task .info > .file { display: flex; }
