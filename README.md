@@ -90,7 +90,7 @@ It is also possible to define complex queries. These must start with `dv.pages` 
 
 ## Optional parameters
 
-### options:
+### Hide options:
 ```
 options: "noMotivation"
 options: "noRepeat"
@@ -104,19 +104,24 @@ options: "noInfo"
 options: "noAnimation"
 options: "noQuickEntry"
 options: "noDone"
-
-options: "compact"
-```
-
-You can combine all of these parameters:
-
-```
-options: "noMotivations noStar noAnimation"
 ```
 
 With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, animations, the quick entry panel or done tasks.
 
-Futhermore you can show your tasks in a compacter way inside timeline.
+### Style options
+```
+options: "compact"
+```
+
+Futhermore you can show your tasks in a compacter way inside your timeline.
+
+<img width="350" alt="Normal" src="https://user-images.githubusercontent.com/59178587/216806399-32539104-e40d-4784-9355-368de10e7eaf.png"> ⇦ 'normal' OR 'compact' ⇨ <img width="350" alt="Compact" src="https://user-images.githubusercontent.com/59178587/216806364-ab25595a-9cb8-425c-8907-7bf029bd1e67.png">
+
+### Combining options
+```
+options: "noMotivations noAnimation compact"
+```
+All options can be combined with each other as desired.
 
 ```
 options: "todayFocus"
