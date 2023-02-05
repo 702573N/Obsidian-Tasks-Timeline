@@ -147,9 +147,9 @@
 	background: var(--interactive-accent);
 	margin: 5px 0;
 }
-.taskido .task.done .file {
-	color: var(--text-faint);
-	font-weight: normal;
+.taskido .task.done {
+	color: var(--text-faint) !important;
+	font-weight: normal !important;
 }
 .taskido .task.done .tag,
 .taskido .task.done .repeat,
@@ -192,8 +192,12 @@
 	stroke-width: 1.75px;
 }
 .taskido .task .file {
+	color: var(--task-color);
 	font-size: 15px;
 	font-weight: bold;
+}
+.taskido .task .info > .file {
+	display: none;
 	color: var(--task-color);
 }
 .taskido .task .content {
@@ -208,16 +212,18 @@
 	background: var(--tag-background) !important;
 	padding: 0px 5px;
 }
-.taskido .repeat,
-.taskido .priority,
-.taskido .relative {
+.taskido .info .repeat,
+.taskido .info .priority,
+.taskido .info .relative,
+.taskido .info .file {
 	color: var(--text-normal);
 	padding: 0px;
 }
-.taskido .tag,
-.taskido .repeat,
-.taskido .priority,
-.taskido .relative {
+.taskido .info .tag,
+.taskido .info .repeat,
+.taskido .info .priority,
+.taskido .info .relative,
+.taskido .info .file {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -227,23 +233,26 @@
 	border-radius: 5px;
 	margin: 2px 5px 2px 0;
 }
-.taskido .tag .icon,
-.taskido .repeat .icon,
-.taskido .priority .icon,
-.taskido .relative .icon {
+.taskido .info .tag .icon,
+.taskido .info .repeat .icon,
+.taskido .info .priority .icon,
+.taskido .info .relative .icon,
+.taskido .info .file .icon {
 	text-align: center;
 	height: 18px;
 }
-.taskido .tag .label,
-.taskido .repeat .label,
-.taskido .priority .label,
-.taskido .relative .label {
+.taskido .info .tag .label,
+.taskido .info .repeat .label,
+.taskido .info .priority .label,
+.taskido .info .relative .label,
+.taskido .info .file .label {
 	margin-left: 2px;
 }
-.taskido .tag svg,
-.taskido .repeat svg,
-.taskido .priority svg,
-.taskido .relative svg {
+.taskido .info .tag svg,
+.taskido .info .repeat svg,
+.taskido .info .priority svg,
+.taskido .info .relative svg,
+.taskido .info .file svg {
 	height: 12px;
 	width: 12px;
 	stroke-width: 1.75px;
@@ -399,7 +408,8 @@
 .taskido.noTag .tag,
 .taskido.noPriority .priority,
 .taskido.noAdd .add,
-.taskido.noFile .task:not(.star, .add) .line:nth-child(1),
+.taskido.noFile .task:not(.star, .add) .file,
+.taskido.noFile .task .info > .file,
 .taskido.noInfo .task .line:nth-child(2),
 .taskido.noDone .year[data-types="done"],
 .taskido.noDone .details[data-types="done"],
@@ -426,3 +436,8 @@
 .taskido.unplannedFilter .year:not(.current):not([data-types*="unplanned"]) { display: none; }
 .taskido.unplannedFilter .details:not(.today):not([data-types*="unplanned"]) { display: none; }
 .taskido.unplannedFilter .task:not(.unplanned) { display: none; }
+/* Style */
+.taskido.compact .task .info { order: 2 !important; }
+.taskido.compact .task .line:not(.info) .file { display: none !important; }
+.taskido.compact .task .content { order: 1 !important; font-weight: bold !important; }
+.taskido.compact .task .info > .file { display: flex; }
