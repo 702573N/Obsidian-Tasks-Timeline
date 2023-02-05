@@ -1,4 +1,4 @@
-let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
+let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -23,6 +23,7 @@ var dailyNoteRegEx = momentToRegex(dailyNoteFormat);
 
 // Set Root
 const rootNode = dv.el("div", "", {cls: "taskido "+options, attr: {id: "taskido"+tid}});
+if (css) { var style = document.createElement("style"); style.innerHTML = css; rootNode.querySelector("span").append(style) };
 
 // Icons
 var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M7.5 12.5L10.5 15.5L16 10"></path></svg>';
@@ -38,6 +39,7 @@ var tagIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" vi
 var repeatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>';
 var priorityIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
 var forwardIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>';
+var fileIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
 
 // Initialze
 getMeta(tasks);
@@ -567,6 +569,8 @@ function getTimeline(tasks) {
 		
 		tasksFiltered.forEach(function(item) {
 			var file = getFilename(item.path);
+			var header = item.header.subpath;
+			if (header && header != file) {file += " > " + header};
 			var link = item.link.path.replace("'", "&apos;");
 			var text = item.text;
 			var posEndLine = item.position.start.line;
@@ -580,6 +584,8 @@ function getTimeline(tasks) {
 			if (item.relative) {
 				info += "<div class='relative'><div class='icon'>" + forwardIcon + "</div><div class='label'>" + item.relative + "</div></div>";
 			};
+			
+			info += "<div class='file'><div class='icon'>" + fileIcon + "</div><div class='label'>" + file + "</div></div>";
 			
 			if (item.priorityLabel) {
 				info += "<div class='priority'><div class='icon'>" + priorityIcon + "</div><div class='label'>" + item.priorityLabel + "</div></div>";
@@ -600,7 +606,7 @@ function getTimeline(tasks) {
 				text = text.replace(tag, "");
 			});
 			
-			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><a class='internal-link' href='" + link + "'><div class='file'>" + file + "</div></a></div><div class='line'>" + info + "</div><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a></div></div>";
+			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><a class='internal-link' href='" + link + "'><div class='file'>" + file + "</div></a></div><div class='line info'>" + info + "</div><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a></div></div>";
 			content += task;
 		});
 
@@ -622,4 +628,4 @@ function getTimeline(tasks) {
 		yearNode.setAttribute("data-types", containedTypesPerYear);
 	};
 	
-};
+	};
