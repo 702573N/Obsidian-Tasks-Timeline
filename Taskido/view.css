@@ -200,6 +200,7 @@
 .taskido .task .info > .file {
 	display: none;
 	color: var(--task-color);
+	font-weight: normal;
 }
 .taskido .task .content {
 	display: block;
