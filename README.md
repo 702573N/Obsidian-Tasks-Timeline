@@ -104,6 +104,8 @@ options: "noInfo"
 options: "noAnimation"
 options: "noQuickEntry"
 options: "noDone"
+
+options: "compact"
 ```
 
 You can combine all of these parameters:
@@ -112,7 +114,9 @@ You can combine all of these parameters:
 options: "noMotivations noStar noAnimation"
 ```
 
-With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, animations, or the quick entry panel.
+With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, animations, the quick entry panel or done tasks.
+
+Futhermore you can show your tasks in a compacter way inside timeline.
 
 ```
 options: "todayFocus"
