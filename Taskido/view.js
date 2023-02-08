@@ -107,16 +107,18 @@ function getMeta(tasks) {
 						timelineDates.push(fieldDate);
 					};
 					if ( fieldKey == "scheduled" && fieldDate < today ) {
-						happens["scheduled"] = moment().format("YYYY-MM-DD"); // process
-						tasks[i].order = taskOrder.indexOf("process");
+						happens["scheduled"] = fieldDate;
+						happens["scheduledForward"] = today;
+						tasks[i].order = taskOrder.indexOf("scheduled");
 					} else if (fieldKey == "scheduled") {
 						happens["scheduled"] = fieldDate;
 						tasks[i].order = taskOrder.indexOf("scheduled");
 						timelineDates.push(fieldDate);
 					};
 					if ( fieldKey == "start" && fieldDate < today ) {
-						happens["start"] = moment().format("YYYY-MM-DD"); // process
-						tasks[i].order = taskOrder.indexOf("process");
+						happens["start"] = fieldDate;
+						happens["startForward"] = today;
+						tasks[i].order = taskOrder.indexOf("start");
 					} else if (fieldKey == "start") {
 						happens["start"] = fieldDate;
 						tasks[i].order = taskOrder.indexOf("start");
