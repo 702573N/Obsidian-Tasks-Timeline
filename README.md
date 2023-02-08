@@ -48,7 +48,7 @@ Although I initially developed the Obsidian Tasks Calendar, I now work exclusive
     
     For example...
     
-    dv.view("taskido", {pages: "", select: "Task Management/Inbox.md", inbox: "Task Management/Inbox.md", dailyNoteFolder: "Daily Notes", options: "noMotivation noAnimation"})
+    dv.view("taskido", {pages: "", select: "Task Management/Inbox.md", inbox: "Task Management/Inbox.md", dailyNoteFolder: "Daily Notes", forward:true, options: "noMotivation noAnimation"})
     
     To get a little structure you yan also write...
     
@@ -57,6 +57,7 @@ Although I initially developed the Obsidian Tasks Calendar, I now work exclusive
         select: "Task Management/Inbox.md", 
         inbox: "Task Management/Inbox.md", 
         dailyNoteFolder: "Daily Notes", 
+        forward: true,
         options: "noMotivation noAnimation"
     })
     ```
@@ -89,37 +90,23 @@ It is also possible to define complex queries. These must start with `dv.pages` 
 ---
 
 ## Optional parameters
-
-### Hide options:
 ```
-options: "noMotivation"
+options: "noCounters"
+options: "noQuickEntry"
+options: "noYear"
+options: "noRelative"
 options: "noRepeat"
 options: "noPriority"
 options: "noTag"
-options: "noAdd"
-options: "noRelative"
-options: "noYear"
 options: "noFile"
 options: "noInfo"
-options: "noAnimation"
-options: "noQuickEntry"
 options: "noDone"
 ```
-
-With this options you can hide some elements which they do not need, or which disturb, like motivation texts, recurrence rules, priority information, tags, relative dates, filenames, task infos (priority, recurrence and tags line), the add task to daily note button on today, animations, the quick entry panel or done tasks.
-
-### Style options
-```
-options: "compact"
-```
-
-Futhermore you can show your tasks in a compacter way inside your timeline.
-
-<img width="350" alt="Normal" src="https://user-images.githubusercontent.com/59178587/216806399-32539104-e40d-4784-9355-368de10e7eaf.png"> ⇦ 'normal' OR 'compact' ⇨ <img width="350" alt="Compact" src="https://user-images.githubusercontent.com/59178587/216806364-ab25595a-9cb8-425c-8907-7bf029bd1e67.png">
+With this options you can hide some elements which they do not need, or which disturb.
 
 ### Combining options
 ```
-options: "noMotivations noAnimation compact"
+options: "noCounters noQuickEntry noInfo"
 ```
 All options can be combined with each other as desired.
 
@@ -166,17 +153,11 @@ sort: "t=>t.priority"
 ```
 With the sort paramter you can set your personal sort algorithm to sort your tasks inside a day.
 
-### carryForwardOverdue:
+### forward:
 ```
-carryForwardOverdue: true
+forward: true
 ```
-This parameter carry forward past due tasks and display them on the current date.
-
-### carryForwardUnplanned:
-```
-carryForwardUnplanned: true
-```
-This parameter carry forward past unplanned tasks and display them on the current date.
+This parameter carry forward tasks from past and display them on the current date.
 
 ### dateFormat:
 ```
