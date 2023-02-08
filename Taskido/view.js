@@ -1,4 +1,4 @@
-let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, carryForwardOverdue, carryForwardUnplanned, carryForwardStars, dateFormat, options} = input;
+let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, forward, dateFormat, options} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -12,7 +12,7 @@ if (!dailyNoteFolder) {dailyNoteFolder = ""} else {dailyNoteFolder = dailyNoteFo
 if (!dailyNoteFormat) {dailyNoteFormat = "YYYY-MM-DD"};
 if (!taskOrder) {taskOrder = ["overdue", "due", "scheduled", "start", "process", "unplanned","done"]};
 if (!sort) {sort = "t=>t.order"};
-if (!dateFormat) {dateFormat = "ddd, MMM D"};
+if (!dateFormat) {dateFormat = "ddd, MMM D"}; // "ddd, MMM D" // "MMMM D"
 if (!select) {select = "dailyNote"};
 
 // Variables
@@ -30,16 +30,17 @@ var doneIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" v
 var dueIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
 var scheduledIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>';
 var startIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path></svg>';
-var overdueIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
-var processIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M7.6394 11.0114C8.08785 9.01426 9.87182 7.52222 12.0044 7.52222C14 7.52222 15 9 16.0121 10.0057M8.00579 14.0042C9 15 10 16.4695 12.0044 16.4695C14.1282 16.4695 15.9062 14.9897 16.3638 13.0049"></path><path d="M16.5 8.5V10.5H14.5"></path><path d="M8 16L8 14L10 14"></path></svg>';
+var overdueIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+var processIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h13l4-3.5L18 6Z"></path><path d="M12 13v9"></path><path d="M12 2v4"></path></svg>';
 var dailynoteIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
-var unplannedIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>';
+var unplannedIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.18 4.18A2 2 0 0 0 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 1.82-1.18"></path><path d="M21 15.5V6a2 2 0 0 0-2-2H9.5"></path><path d="M16 2v4"></path><path d="M3 10h7"></path><path d="M21 10h-5.5"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>';
+var taskIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>';
 var addIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>';
 var tagIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path><path d="M7 7h.01"></path></svg>';
 var repeatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg>';
 var priorityIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+var fileIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>';
 var forwardIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>';
-var fileIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
 
 // Initialze
 getMeta(tasks);
@@ -56,21 +57,20 @@ function getMeta(tasks) {
 		
 		// Inbox
 		if (inbox && inbox == filePath && tasks[i].completed == false && !taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/)) {
-			timelineDates.push(moment().format("YYYY-MM-DD"));
-			happens["unplanned"] = moment().format("YYYY-MM-DD");
+			timelineDates.push(today);
+			happens["unplanned"] = today;
 			tasks[i].order = taskOrder.indexOf("unplanned");
-		}
+		};
 		
 		// Daily Notes
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
 		var dailyTaskMatch = taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/);
 		if (dailyNoteMatch && tasks[i].completed == false) {
 			if(!dailyTaskMatch) {
-				if (carryForwardUnplanned == true) {
-					timelineDates.push(moment().format("YYYY-MM-DD"));
-					happens["unplanned"] = moment().format("YYYY-MM-DD");
+				if (forward == true) {
+					timelineDates.push(today);
+					happens["unplanned"] = today;
 					tasks[i].order = taskOrder.indexOf("unplanned");
-					tasks[i].relative = moment(dailyNoteMatch[1], dailyNoteFormat).fromNow();
 				} else {
 					timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
 					happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
@@ -87,41 +87,39 @@ function getMeta(tasks) {
 			if ( fieldKey == "due" || fieldKey == "scheduled" || fieldKey == "start" || fieldKey == "completed") {
 				var fieldDate = moment(fieldValue).format("YYYY-MM-DD");
 				if (tasks[i].completed == false) {
-					if ( fieldKey == "scheduled" && fieldDate < moment().format("YYYY-MM-DD") ) {
-						happens["process"] = moment().format("YYYY-MM-DD");
+					if ( fieldKey == "due" && fieldDate < today ) {
+						if (forward == true) {
+							happens["overdue"] = fieldDate;
+							happens["overdueForward"] = today;
+							tasks[i].order = taskOrder.indexOf("overdue");
+						} else {
+							happens["overdue"] = fieldDate;
+							tasks[i].order = taskOrder.indexOf("overdue");
+							timelineDates.push(fieldDate);
+						};
+					} else if ( fieldKey == "due" && fieldDate == today ) {
+						happens["due"] = fieldDate;
+						tasks[i].order = taskOrder.indexOf("due");
+						timelineDates.push(fieldDate);
+					} else if ( fieldKey == "due" && fieldDate > today ) {
+						happens["due"] = fieldDate;
+						tasks[i].order = taskOrder.indexOf("due");
+						timelineDates.push(fieldDate);
+					};
+					if ( fieldKey == "scheduled" && fieldDate < today ) {
+						happens["scheduled"] = moment().format("YYYY-MM-DD"); // process
 						tasks[i].order = taskOrder.indexOf("process");
 					} else if (fieldKey == "scheduled") {
 						happens["scheduled"] = fieldDate;
 						tasks[i].order = taskOrder.indexOf("scheduled");
 						timelineDates.push(fieldDate);
 					};
-					if ( fieldKey == "start" && fieldDate < moment().format("YYYY-MM-DD") ) {
-						happens["process"] = moment().format("YYYY-MM-DD");
+					if ( fieldKey == "start" && fieldDate < today ) {
+						happens["start"] = moment().format("YYYY-MM-DD"); // process
 						tasks[i].order = taskOrder.indexOf("process");
-						scheduled
 					} else if (fieldKey == "start") {
 						happens["start"] = fieldDate;
 						tasks[i].order = taskOrder.indexOf("start");
-						timelineDates.push(fieldDate);
-					};
-					if ( fieldKey == "due" && fieldDate < moment().format("YYYY-MM-DD") ) {
-						if (carryForwardOverdue == true) {
-							happens["overdue"] = moment().format("YYYY-MM-DD");
-							tasks[i].order = taskOrder.indexOf("overdue");
-							tasks[i].relative = moment(fieldDate).fromNow();
-						} else {
-							happens["overdue"] = fieldDate;
-							tasks[i].order = taskOrder.indexOf("overdue");
-							timelineDates.push(fieldDate);
-						};
-					} else if ( fieldKey == "due" && fieldDate == moment().format("YYYY-MM-DD") ) {
-						happens = {}; // Clear Object !!!
-						happens["due"] = fieldDate;
-						tasks[i].order = taskOrder.indexOf("due");
-						timelineDates.push(fieldDate);
-					} else if ( fieldKey == "due" && fieldDate > moment().format("YYYY-MM-DD") ) {
-						happens["due"] = fieldDate;
-						tasks[i].order = taskOrder.indexOf("due");
 						timelineDates.push(fieldDate);
 					};
 				} else if (tasks[i].completed == true) {
@@ -135,75 +133,67 @@ function getMeta(tasks) {
 		};
 		
 		// Tasks Plugin Tasks
-		var startMatch = taskText.match(/🛫 *(\d{4}-\d{2}-\d{2})/);
-		if (startMatch && tasks[i].completed == false) {
-			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
-			if ( startMatch[1] < moment().format("YYYY-MM-DD") ) {
-				happens["process"] = moment().format("YYYY-MM-DD");
-				tasks[i].order = 6;
-				tasks[i].order = taskOrder.indexOf("process");
-			} else {
-				happens["start"] = startMatch[1];
-				tasks[i].order = 8;
-				tasks[i].order = taskOrder.indexOf("start");
-				timelineDates.push(startMatch[1]);
-			};
-		} else if (startMatch && tasks[i].completed == true) {
-			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
-		};
-		var scheduledMatch = taskText.match(/⏳ *(\d{4}-\d{2}-\d{2})/);
-		if (scheduledMatch && tasks[i].completed == false) {
-			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
-			if ( scheduledMatch[1] < moment().format("YYYY-MM-DD") ) {
-				happens["process"] = moment().format("YYYY-MM-DD");
-				tasks[i].order = 6;
-				tasks[i].order = taskOrder.indexOf("process");
-			} else {
-				happens["scheduled"] = scheduledMatch[1];
-				tasks[i].order = 4;
-				tasks[i].order = taskOrder.indexOf("scheduled");
-				timelineDates.push(scheduledMatch[1]);
-			};
-		} else if (scheduledMatch && tasks[i].completed == true) {
-			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
-		};
 		var dueMatch = taskText.match(/📅 *(\d{4}-\d{2}-\d{2})/);
 		if (dueMatch && tasks[i].completed == false) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
-			if ( dueMatch[1] < moment().format("YYYY-MM-DD") ) {
-				if (carryForwardOverdue == true) {
-					happens["overdue"] = moment().format("YYYY-MM-DD");
-					tasks[i].order = 2;
+			if ( dueMatch[1] < today ) {
+				if (forward == true) {
+					happens["overdue"] = dueMatch[1];
+					happens["overdueForward"] = today;
 					tasks[i].order = taskOrder.indexOf("overdue");
-					tasks[i].relative = moment(dueMatch[1]).fromNow();
 				} else {
 					happens["overdue"] = dueMatch[1];
-					tasks[i].order = 2;
 					tasks[i].order = taskOrder.indexOf("overdue");
 					timelineDates.push(dueMatch[1]);
 				};
-			} else if ( dueMatch[1] == moment().format("YYYY-MM-DD") ) {
-				happens = {}; // Clear Object !!!
+			} else if ( dueMatch[1] == today ) {
 				happens["due"] = dueMatch[1];
-				tasks[i].order = 3;
 				tasks[i].order = taskOrder.indexOf("due");
 				timelineDates.push(dueMatch[1]);
 			} else if ( dueMatch[1] > moment().format("YYYY-MM-DD") ) {
 				happens["due"] = dueMatch[1];
-				tasks[i].order = 3;
 				tasks[i].order = taskOrder.indexOf("due");
 				timelineDates.push(dueMatch[1]);
 			};
 		} else if (dueMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
 		};
+		var scheduledMatch = taskText.match(/⏳ *(\d{4}-\d{2}-\d{2})/);
+		if (scheduledMatch && tasks[i].completed == false) {
+			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
+			if ( scheduledMatch[1] < today ) {
+				happens["scheduled"] = scheduledMatch[1];
+				happens["scheduledForward"] = today;
+				tasks[i].order = taskOrder.indexOf("scheduled");
+			} else {
+				happens["scheduled"] = scheduledMatch[1];
+				tasks[i].order = taskOrder.indexOf("scheduled");
+				timelineDates.push(scheduledMatch[1]);
+			};
+		} else if (scheduledMatch && tasks[i].completed == true) {
+			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
+		};
+		var startMatch = taskText.match(/🛫 *(\d{4}-\d{2}-\d{2})/);
+		if (startMatch && tasks[i].completed == false) {
+			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
+			if ( startMatch[1] < today ) {
+				happens["start"] = startMatch[1];
+				happens["startForward"] = today;
+				tasks[i].order = taskOrder.indexOf("start");
+			} else {
+				happens["start"] = startMatch[1];
+				tasks[i].order = taskOrder.indexOf("start");
+				timelineDates.push(startMatch[1]);
+			};
+		} else if (startMatch && tasks[i].completed == true) {
+			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
+		};
 		var doneMatch = taskText.match(/✅ *(\d{4}-\d{2}-\d{2})/);
 		if (doneMatch && tasks[i].completed == true) {
 			tasks[i].text = tasks[i].text.replace(doneMatch[0], "");
-			if (done == true || doneMatch[1] == moment().format("YYYY-MM-DD")) {
+			if (done == true || doneMatch[1] == today) {
 				timelineDates.push(doneMatch[1]);
 				happens["done"] = doneMatch[1];
-				tasks[i].order = 1;
 				tasks[i].order = taskOrder.indexOf("done");
 			};
 		};
@@ -263,6 +253,15 @@ function getMeta(tasks) {
 	};
 	timelineDates.push(today);
 	timelineDates = [...new Set(timelineDates)].sort();
+};
+
+function getRelative(someDate) {
+	let date = moment(someDate);
+	if (moment().diff(date, 'days') >= 1 || moment().diff(date, 'days') <= -1) {
+		return date.fromNow();
+	} else {
+		return date.calendar().split(' ')[0];
+	};
 };
 
 function getSelectOptions() {
@@ -486,13 +485,13 @@ function getTimeline(tasks) {
 	var yearNode;
 	var lastYear = null;
 	var containedTypesPerYear = null;
-	
+
 	for (i=0; i<timelineDates.length; i++) {
 		
 		// Variables
 		var tasksFiltered = tasks.filter(t=>Object.values(t.happens).includes(timelineDates[i].toString())).sort(eval(sort));
-		var relative = moment(timelineDates[i].toString()).fromNow();
 		var date = moment(timelineDates[i].toString()).format(dateFormat);
+		var weekday = moment(timelineDates[i].toString()).format("dddd");
 		var year = moment(timelineDates[i].toString()).format("YYYY");
 		var detailsCls = "";
 		var content = "";
@@ -523,31 +522,6 @@ function getTimeline(tasks) {
 			var unplannedCount = tasks.filter(t=>t.happens["unplanned"]).length;
 			var allCount = doneCount + todoCount + overdueCount;
 			
-			if (todoCount == 0 && processCount == 0 && overdueCount == 0) {
-				var motivation = "☕️ Wow, looks like an empty day. Relax!"
-			} else if (todoCount == 0 && doneCount > 0 && overdueCount == 0) {
-				var motivation = "☑️ Success usually comes to those who are too busy looking for it."
-			}else if (todoCount == 0 && doneCount > 0 && overdueCount > 0) {
-				var motivation = "🚩 Seems like you now have time to take care of your overdue tasks."
-			} else if (todoCount > 0 && todoCount < 4 && overdueCount < 3) {
-				var motivation = "👍 Only " + todoCount + " task/s for today. You can do this easily!"
-			} else if (todoCount > 0 && todoCount < 4 && overdueCount >= 3 && overdueCount < 5) {
-				var motivation = "😀 Only " + todoCount + " task/s for today. But keep an eye on the overdue tasks!"
-			} else if (todoCount >= 3 && overdueCount < 3) {
-				var motivation = "🐥 Few things to do. The faster you start, the faster you finish."
-			} else if (todoCount >= 10 && overdueCount < 3) {
-				var motivation = "⏰ Use your time wisely, you have a lot to do today!"
-			} else if (processCount >= 6) {
-				var motivation = "🥯 You are working on so many tasks at once. Don't forget the break!"
-			} else if (overdueCount >= 3 && overdueCount < 6) {
-				var motivation = "🐰 Unfortunately, you still have some unfinished tasks. But the situation is not yet dramatic, so cheer up."
-			} else if (overdueCount >= 6  && overdueCount < 10) {
-				var motivation = "👀 Your unfinished tasks could slowly become a problem. Keep the ball rolling!"
-			} else if (todoCount >= 8  && overdueCount >= 8) {
-				var motivation = "🚧 Please take care of yourself! Your situation is really tense at the moment. I believe in you."
-			} else {
-				var motivation = "💡 Just one small positive thought in the morning can change your whole day."
-			};
 			// Counter
 			var todayContent = "<div class='todayHeader'>Today</div>"
 			todayContent += "<div class='counters'>"
@@ -562,7 +536,6 @@ function getTimeline(tasks) {
 			todayContent += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg>'
 			todayContent += "</button></div>"
 			todayContent += "</div>"
-			todayContent += "<div class='motivation'>" + motivation + "</div>"
 			
 			content += todayContent;
 		};
@@ -577,23 +550,32 @@ function getTimeline(tasks) {
 			var posEndCol = item.position.end.col;
 			var info = "";
 			var color = getMetaFromNote(item, "color");
-			var cls = Object.keys(item.happens).find(key => item.happens[key] === timelineDates[i].toString());
+			if (!color) {color = "var(--text-muted)"};
+			var cls = Object.keys(item.happens).find(key => item.happens[key] === timelineDates[i].toString()).replace("Forward","");
 			containedTypesPerDay.push(cls);
 			containedTypesPerYear.push(cls);
-			
-			if (item.relative) {
-				info += "<div class='relative'><div class='icon'>" + forwardIcon + "</div><div class='label'>" + item.relative + "</div></div>";
+
+			// Handle forwarded tasks to get relative by cls
+			for (h=0;h<Object.keys(item.happens).length;h++) {
+				var key = Object.keys(item.happens)[h];
+				var value = Object.values(item.happens)[h];
+				var relative = getRelative(moment(value));
+				
+				// Append relative infos
+				if (!key.includes("Forward") && key != "unplanned") {
+					info += "<div class='relative'><div class='icon'>" + eval(key+"Icon") +  "</div><div class='label'>" + relative + "</div></div>";
+				};
 			};
-			
-			info += "<div class='file'><div class='icon'>" + fileIcon + "</div><div class='label'>" + file + "</div></div>";
+
+			if (item.repeat) {
+				info += "<div class='repeat'><div class='icon'>" + repeatIcon + "</div><div class='label'>" + item.repeat.replace("🔁", "") + "</div></div>";
+			};
 			
 			if (item.priorityLabel) {
 				info += "<div class='priority'><div class='icon'>" + priorityIcon + "</div><div class='label'>" + item.priorityLabel + "</div></div>";
 			};
 			
-			if (item.repeat) {
-				info += "<div class='repeat'><div class='icon'>" + repeatIcon + "</div><div class='label'>" + item.repeat.replace("🔁", "") + "</div></div>";
-			};
+			info += "<div class='file'><div class='icon'>" + fileIcon + "</div><div class='label'>" + file + "</div></div>";
 			
 			item.tags.forEach(function(tag) {
 				var tagText = tag.replace("#","");
@@ -601,23 +583,20 @@ function getTimeline(tasks) {
 				if (hexColorMatch) {
 					var style = "style='--tag-color:#" + hexColorMatch[1] + ";--tag-background:#" + hexColorMatch[1] + "1a'";
 					tagText = hexColorMatch[2];
+				} else {
+					var style = "style='--tag-color:var(--text-muted)'";
 				};
 				info += "<a href='" + tag + "' class='tag' " + style + "><div class='icon'>" + tagIcon + "</div><div class='label'>" + tagText + "</div></a>";
 				text = text.replace(tag, "");
 			});
 			
-			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + eval(cls+"Icon") + "</div><div class='stripe'></div></div><div class='lines'><div class='line'><a class='internal-link' href='" + link + "'><div class='file'>" + file + "</div></a></div><div class='line info'>" + info + "</div><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a></div></div>";
+			if (item.completed) { var icon = doneIcon } else { var icon = taskIcon };
+			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + icon + "</div><div class='stripe'></div></div><div class='lines'><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a><div class='line info'>" + info + "</div></div></div>";
 			content += task;
 		});
-
-		// Add Task For Today
-		if (timelineDates[i] == today) {
-			var addButton = "<a class='internal-link' href='" + dailyNoteFolder + timelineDates[i] + "'><div class='task add'><div class='timeline'><div class='icon'>" + addIcon + "</div></div><div class='lines'><div class='line'><div class='file'>Add task for today</div></div></div></div></a>";
-			content += addButton;
-		};
 		
 		// Set Date Template
-		var date = "<div class='dateLine'><div class='date'>" + date + "</div><div class='relative'>" + relative + "</div></div><div class='content'>" + content + "</div>"
+		var date = "<div class='dateLine'><div class='date'>" + date + "</div><div class='weekday'>" + "</div></div><div class='content'>" + content + "</div>"
 		
 		// Append To Root Node
 		containedTypesPerDay = [...new Set(containedTypesPerDay)].sort();
@@ -628,4 +607,4 @@ function getTimeline(tasks) {
 		yearNode.setAttribute("data-types", containedTypesPerYear);
 	};
 	
-	};
+};
