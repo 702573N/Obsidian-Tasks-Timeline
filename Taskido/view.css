@@ -146,6 +146,17 @@
 	color: var(--text-muted) !important;
 	font-weight: normal !important;
 }
+.taskido .task.done .timeline .icon svg {
+	fill: var(--interactive-accent) !important;
+	stroke: var(--interactive-accent) !important;
+}
+.taskido .task.done .timeline .icon svg path:nth-child(1) {
+	fill: var(--interactive-accent) !important;
+}
+.taskido .task.done .timeline .icon svg path:nth-child(2) {
+	stroke: var(--text-on-accent) !important;
+	stroke-width: 2.75px;
+}
 .taskido .task.done .info .tag,
 .taskido .task.done .info .repeat,
 .taskido .task.done .info .priority,
@@ -186,7 +197,7 @@
 .taskido .timeline .icon svg {
 	height: 18px;
 	width: 18px;
-	stroke-width: 1.75px;
+	stroke-width: 2px;
 }
 .taskido .task .info .file {
 	color: var(--task-color);
@@ -235,19 +246,6 @@
 }
 .taskido .task.overdue .info .relative {
 	color: #ff375f !important;
-}
-.taskido .done .timeline svg {
-	stroke: var(--text-muted) !important;
-}
-.taskido .done .stripe:after {
-	background: var(--text-muted) !important;
-}
-.taskido .process .timeline svg {
-	-webkit-animation: rotate 2s linear infinite;
-}
-/* Animations */
-@-webkit-keyframes rotate {
-	from {-webkit-transform: rotate(0deg)} to {-webkit-transform: rotate(360deg)}
 }
 /* Quick Entry Panel */
 .taskido .quickEntryPanel {
@@ -346,10 +344,6 @@
 	transition: none !important;
 }
 /* Classes */
-.taskido.noAnimation .process .timeline svg,
-.taskido.noAnimation .overdue .timeline svg {
-	-webkit-animation: none !important;
-}
 .taskido.todayFocus .todayHeader,
 .taskido.todoFocus .counter#todo,
 .taskido.todoFilter .counter#todo,
