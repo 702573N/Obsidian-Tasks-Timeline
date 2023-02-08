@@ -11,7 +11,7 @@
 }
 .taskido .task .innerLink,
 .taskido .task .outerLink {
-	color: var(--interactive-accent) !important;
+	color: var(--interactive-accent);
 	text-decoration: underline !important;
 }
 .taskido .year {
@@ -37,7 +37,7 @@
 	border-radius: 10px;
 }
 .taskido .details.today {
-	padding: 60px 0;
+	padding: 30px 0;
 }
 .taskido .counters {
 	display: flex;
@@ -78,12 +78,6 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.taskido .motivation {
-	margin: 20px 5px;
-	text-align: center;
-	font-size: 12px;
-	color: var(--text-faint);
-}
 .taskido .dateLine {
 	display: flex;
 	flex-direction: row;
@@ -100,13 +94,13 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.taskido .relative {
+.taskido .weekday {
 	color: var(--text-normal);
 	font-weight: normal;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: 9px;
+	font-size: 16px;
 }
 .taskido .task {
 	display: flex;
@@ -149,18 +143,20 @@
 	margin: 5px 0;
 }
 .taskido .task.done {
-	color: var(--text-faint) !important;
+	color: var(--text-muted) !important;
 	font-weight: normal !important;
 }
-.taskido .task.done .tag,
-.taskido .task.done .repeat,
-.taskido .task.done .priority,
-.taskido .task.done .relative {
-	color: var(--text-faint);
+.taskido .task.done .info .tag,
+.taskido .task.done .info .repeat,
+.taskido .task.done .info .priority,
+.taskido .task.done .info .relative,
+.taskido .task.done .info .file {
+	color: var(--text-muted) !important;
+	line-height: 0;
 }
 .taskido .task.done .content {
 	text-decoration: line-through;
-	color: var(--text-faint);
+	color: var(--text-muted);
 }
 .taskido .line {
 	display: flex;
@@ -192,13 +188,7 @@
 	width: 18px;
 	stroke-width: 1.75px;
 }
-.taskido .task .file {
-	color: var(--task-color);
-	font-size: 15px;
-	font-weight: bold;
-}
-.taskido .task .info > .file {
-	display: none;
+.taskido .task .info .file {
 	color: var(--task-color);
 	font-weight: normal;
 }
@@ -208,18 +198,6 @@
 	font-size: 15px;
 	font-weight: normal;
 	color: var(--text-normal);
-}
-.taskido .tag {
-	color: var(--tag-color) !important;
-	background: var(--tag-background) !important;
-	padding: 0px 5px;
-}
-.taskido .info .repeat,
-.taskido .info .priority,
-.taskido .info .relative,
-.taskido .info .file {
-	color: var(--text-normal);
-	padding: 0px;
 }
 .taskido .info .tag,
 .taskido .info .repeat,
@@ -232,67 +210,44 @@
 	align-items: center;
 	width: auto;
 	font-size: 9px;
-	border-radius: 5px;
 	margin: 2px 5px 2px 0;
+	color: var(--text-muted);
+	padding: 0px;
+	border: none;
+	line-height: 0 !important;
 }
-.taskido .info .tag .icon,
-.taskido .info .repeat .icon,
-.taskido .info .priority .icon,
-.taskido .info .relative .icon,
-.taskido .info .file .icon {
+.taskido .info .tag {
+	color: var(--tag-color) !important;
+	background-color: none !important;
+	background: none !important;
+}
+.taskido .info .icon {
 	text-align: center;
 	height: 18px;
 }
-.taskido .info .tag .label,
-.taskido .info .repeat .label,
-.taskido .info .priority .label,
-.taskido .info .relative .label,
-.taskido .info .file .label {
+.taskido .info .label {
 	margin-left: 2px;
 }
-.taskido .info .tag svg,
-.taskido .info .repeat svg,
-.taskido .info .priority svg,
-.taskido .info .relative svg,
-.taskido .info .file svg {
+.taskido .info svg {
 	height: 12px;
 	width: 12px;
 	stroke-width: 1.75px;
 }
-.taskido .task.overdue .content {
+.taskido .task.overdue .info .relative {
 	color: #ff375f !important;
-	font-style: italic !important;
-}
-.taskido .overdue .timeline {
-	-webkit-animation: blink 2s infinite;
-}
-.taskido .overdue .timeline svg {
-	stroke: #ff375f !important;
-}
-.taskido .overdue .stripe:after {
-	background: #ff375f !important;
-}
-.taskido .add .timeline svg {
-	stroke: var(--text-faint);
 }
 .taskido .done .timeline svg {
-	stroke: var(--text-faint) !important;
+	stroke: var(--text-muted) !important;
 }
 .taskido .done .stripe:after {
-	background: var(--text-faint) !important;
+	background: var(--text-muted) !important;
 }
 .taskido .process .timeline svg {
 	-webkit-animation: rotate 2s linear infinite;
 }
-.taskido .add .file {
-	color: var(--text-faint) !important;
-}
 /* Animations */
 @-webkit-keyframes rotate {
 	from {-webkit-transform: rotate(0deg)} to {-webkit-transform: rotate(360deg)}
-}
-@keyframes blink {
-	from { opacity: 1 } 50% { opacity: 0.25 } to { opacity: 1 }
 }
 /* Quick Entry Panel */
 .taskido .quickEntryPanel {
@@ -346,7 +301,6 @@
 	padding: 0 !important;
 	margin: 2.5px 0 !important;
 	color: var(--text-muted);
-	/*-webkit-appearance: none;*/
 }
 .taskido .quickEntryPanel select:hover {
 	color: var(--text-normal);
@@ -354,7 +308,6 @@
 .taskido .quickEntryPanel select option,
 .taskido .quickEntryPanel select optgroup {
 	background: var(--background-primary);
-	/*background: var(--background-modifier-form-field);*/
 	font-weight: normal;
 	color: var(--text-normal);
 }
@@ -405,19 +358,20 @@
 .taskido.unplannedFocus .counter#unplanned,
 .taskido.unplannedFilter .counter#unplanned { color: var(--interactive-accent); background: hsla(var(--interactive-accent-hsl), 0.2); box-shadow: var(--input-shadow); }
 .taskido.noYear .year,
-.taskido.noMotivation .motivation,
 .taskido.noRepeat .repeat,
 .taskido.noTag .tag,
 .taskido.noPriority .priority,
-.taskido.noAdd .add,
-.taskido.noFile .task:not(.star, .add) .file,
+.taskido.noFile .task .file,
 .taskido.noFile .task .info > .file,
 .taskido.noInfo .task .line:nth-child(2),
 .taskido.noDone .year[data-types="done"],
 .taskido.noDone .details[data-types="done"],
 .taskido.noDone .task.done,
 .taskido.noRelative .relative,
-.taskido.noQuickEntry .input { display: none !important; }
+.taskido.noQuickEntry .quickEntryPanel,
+.taskido.noCounters .counters { display: none !important; }
+.taskido.noColor .task .file { color: var(--text-muted) !important }
+.taskido.noColor .task .info .file { color: var(--text-muted) !important }
 /* Focus */
 .taskido.todayFocus .details:not(.today),
 .taskido.todayFocus .year { display: none !important; }
@@ -438,8 +392,3 @@
 .taskido.unplannedFilter .year:not(.current):not([data-types*="unplanned"]) { display: none; }
 .taskido.unplannedFilter .details:not(.today):not([data-types*="unplanned"]) { display: none; }
 .taskido.unplannedFilter .task:not(.unplanned) { display: none; }
-/* Style */
-.taskido.compact .task .info { order: 2 !important; }
-.taskido.compact .task:not(.add) .line:not(.info) .file { display: none !important; }
-.taskido.compact .task .content { order: 1 !important; font-weight: bold !important; }
-.taskido.compact .task .info > .file { display: flex; }
