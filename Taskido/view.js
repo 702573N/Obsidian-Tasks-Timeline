@@ -41,6 +41,7 @@ var repeatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 var priorityIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
 var fileIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>';
 var forwardIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>';
+var alertIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line stroke="#ff375f" x1="12" y1="8" x2="12" y2="12"/><line stroke="#ff375f" x1="12" y1="16" x2="12.01" y2="16"/></svg>';
 
 // Initialze
 getMeta(tasks);
@@ -66,17 +67,28 @@ function getMeta(tasks) {
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
 		var dailyTaskMatch = taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/);
 		if (dailyNoteMatch && tasks[i].completed == false) {
+			tasks[i].dailyNote = true;
 			if(!dailyTaskMatch) {
-				if (forward == true) {
-					timelineDates.push(today);
-					happens["unplanned"] = today;
-					tasks[i].order = taskOrder.indexOf("unplanned");
+				if (moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") < today) {
+					if (forward == true) {
+						timelineDates.push(today);
+						happens["unplanned"] = today;
+						tasks[i].order = taskOrder.indexOf("unplanned");
+					} else {
+						timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
+						happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
+						tasks[i].order = taskOrder.indexOf("unplanned");
+					};
 				} else {
 					timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
 					happens["unplanned"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
 					tasks[i].order = taskOrder.indexOf("unplanned");
 				};
 			};
+		} else if (dailyNoteMatch) {
+			tasks[i].dailyNote = true;
+		} else if (!dailyNoteMatch) {
+			tasks[i].dailyNote = false;
 		};
 		
 		// Dataview Tasks
@@ -554,6 +566,7 @@ function getTimeline(tasks) {
 			var color = getMetaFromNote(item, "color");
 			if (!color) {color = "var(--text-muted)"};
 			var cls = Object.keys(item.happens).find(key => item.happens[key] === timelineDates[i].toString()).replace("Forward","");
+			var dailyNote = item.dailyNote;
 			containedTypesPerDay.push(cls);
 			containedTypesPerYear.push(cls);
 
@@ -593,7 +606,8 @@ function getTimeline(tasks) {
 			});
 			
 			if (item.completed) { var icon = doneIcon } else { var icon = taskIcon };
-			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + icon + "</div><div class='stripe'></div></div><div class='lines'><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a><div class='line info'>" + info + "</div></div></div>";
+			if (cls == "overdue") { var icon = alertIcon };
+			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' data-dailynote='" + dailyNote + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + icon + "</div><div class='stripe'></div></div><div class='lines'><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a><div class='line info'>" + info + "</div></div></div>";
 			content += task;
 		});
 		
