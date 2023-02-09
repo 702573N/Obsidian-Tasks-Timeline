@@ -107,8 +107,8 @@
 	flex-direction: row;
 	flex-wrap: nowrap;
 	border-radius: 10px;
-	padding: 2.5px;
-	margin: 2.5px 0;
+	padding: 0;
+	margin: 0;
 	cursor: pointer;
 }
 .taskido .timeline,
@@ -133,13 +133,16 @@
 	align-items: center;
 	flex-shrink: 1;
 	flex-grow: 1;
-	margin-top: 7.5px;
+	margin: 0;
 }
 .taskido .stripe:after {
 	content: "";
 	height: 100%;
-	width: 1px;
-	background: var(--interactive-accent);
+	width: 0.5px;
+	/*background: var(--interactive-accent);*/
+	/*background: var(--indentation-guide-color);*/
+	/*background: var(--checkbox-border-color);*/
+	background: hsla(var(--interactive-accent-hsl), 0.4);
 	margin: 5px 0;
 }
 .taskido .task.done {
@@ -154,8 +157,8 @@
 	fill: var(--interactive-accent) !important;
 }
 .taskido .task.done .timeline .icon svg path:nth-child(2) {
-	stroke: var(--text-on-accent) !important;
-	stroke-width: 2.75px;
+	stroke: var(--checkbox-marker-color) !important;
+	stroke-width: 2.5px;
 }
 .taskido .task.done .info .tag,
 .taskido .task.done .info .repeat,
@@ -175,12 +178,6 @@
 	flex-wrap: wrap;
 	align-items: center;
 }
-.taskido .line:first-child {
-	line-height: 22px;
-}
-.taskido .line:empty {
-	display: none;
-}
 .taskido .icon {
 	display: flex;
 	justify-content: center;
@@ -191,13 +188,22 @@
 }
 .taskido .timeline .icon {
 	text-align: center;
-	color: var(--interactive-accent);
+	/*color: var(--interactive-accent);*/
+	/*color: var(--checkbox-border-color);*/
+	color: hsla(var(--interactive-accent-hsl), 0.5);
 	height: 22px;
 }
 .taskido .timeline .icon svg {
-	height: 18px;
-	width: 18px;
-	stroke-width: 2px;
+	height: 15px;
+	width: 15px;
+	stroke-width: 1.75px;
+}
+.taskido .task .info {
+	line-height: 22px;
+	padding-bottom: 2px;
+}
+.taskido .task .info:empty {
+	display: none;
 }
 .taskido .task .info .file {
 	color: var(--task-color);
@@ -209,6 +215,7 @@
 	font-size: 15px;
 	font-weight: normal;
 	color: var(--text-normal);
+	line-height: 22px;
 }
 .taskido .info .tag,
 .taskido .info .repeat,
@@ -234,7 +241,7 @@
 }
 .taskido .info .icon {
 	text-align: center;
-	height: 18px;
+	height: 15px;
 }
 .taskido .info .label {
 	margin-left: 2px;
@@ -332,8 +339,8 @@
 	margin: 0 !important;
 }
 .taskido .quickEntryPanel svg {
-	height: 18px;
-	width: 18px;
+	height: 15px;
+	width: 15px;
 	stroke-width: 1.75px;
 }
 .taskido .quickEntryPanel select:active,
@@ -361,6 +368,10 @@
 .taskido.noDone .year[data-types="done"],
 .taskido.noDone .details[data-types="done"],
 .taskido.noDone .task.done,
+.taskido.noUnplanned .task.unplanned,
+.taskido.noUnplanned .counter#unplanned,
+.taskido.noUnplanned .year[data-types="unplanned"],
+.taskido.noUnplanned .details[data-types="unplanned"],
 .taskido.noRelative .relative,
 .taskido.noQuickEntry .quickEntryPanel,
 .taskido.noCounters .counters { display: none !important; }
