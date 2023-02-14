@@ -33,8 +33,8 @@
 	font-weight: bold;
 	text-align: center;
 	margin: 10px 5px;
-	cursor: pointer;
 	border-radius: 10px;
+	cursor: pointer;
 }
 .taskido .details.today {
 	padding: 30px 0;
@@ -60,9 +60,9 @@
 	min-width: 70px;
 	max-width: 150px;
 	overflow: hidden;
-	cursor: pointer;
 	background: var(--interactive-normal);
 	box-shadow: var(--input-shadow);
+	cursor: pointer;
 }
 .taskido .count {
 	font-size: 18px;
@@ -116,6 +116,7 @@
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
+	cursor: default;
 }
 .taskido .timeline {
 	width: 50px;
@@ -139,15 +140,12 @@
 	content: "";
 	height: 100%;
 	width: 0.5px;
-	/*background: var(--interactive-accent);*/
-	/*background: var(--indentation-guide-color);*/
-	/*background: var(--checkbox-border-color);*/
-	background: hsla(var(--interactive-accent-hsl), 0.4);
+	background: var(--checkbox-border-color);
 	margin: 5px 0;
 }
-.taskido .task.done {
-	color: var(--text-muted) !important;
-	font-weight: normal !important;
+.taskido .task.overdue .timeline .icon svg line {
+	stroke: #ff375f !important;
+	stroke-width: 2.5px !important;
 }
 .taskido .task.done .timeline .icon svg {
 	fill: var(--interactive-accent) !important;
@@ -164,11 +162,17 @@
 .taskido .task.done .info .repeat,
 .taskido .task.done .info .priority,
 .taskido .task.done .info .relative,
-.taskido .task.done .info .file {
+.taskido .task.done .info .file,
+.taskido .task.cancelled .info .tag,
+.taskido .task.cancelled .info .repeat,
+.taskido .task.cancelled .info .priority,
+.taskido .task.cancelled .info .relative,
+.taskido .task.cancelled .info .file {
 	color: var(--text-muted) !important;
 	line-height: 0;
 }
-.taskido .task.done .content {
+.taskido .task.done .content,
+.taskido .task.cancelled .content {
 	text-decoration: line-through;
 	color: var(--text-muted);
 }
@@ -188,26 +192,26 @@
 }
 .taskido .timeline .icon {
 	text-align: center;
-	/*color: var(--interactive-accent);*/
-	/*color: var(--checkbox-border-color);*/
-	color: hsla(var(--interactive-accent-hsl), 0.5);
 	height: 22px;
 }
 .taskido .timeline .icon svg {
-	height: 15px;
-	width: 15px;
+	color: var(--checkbox-border-color);
+}
+.taskido .timeline .icon svg:hover {
+	color: var(--checkbox-border-color-hover);
+}
+.taskido .timeline .icon svg {
+	height: var(--checkbox-size);
+	width: var(--checkbox-size);
 	stroke-width: 1.75px;
 }
 .taskido .task .info {
 	line-height: 22px;
 	padding-bottom: 2px;
+	cursor: default;
 }
 .taskido .task .info:empty {
 	display: none;
-}
-.taskido .task .info .file {
-	color: var(--task-color);
-	font-weight: normal;
 }
 .taskido .task .content {
 	display: block;
@@ -217,27 +221,32 @@
 	color: var(--text-normal);
 	line-height: 22px;
 }
-.taskido .info .tag,
-.taskido .info .repeat,
-.taskido .info .priority,
-.taskido .info .relative,
-.taskido .info .file {
+.taskido .task .info .tag,
+.taskido .task .info .repeat,
+.taskido .task .info .priority,
+.taskido .task .info .relative,
+.taskido .task .info .file {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
 	align-items: center;
 	width: auto;
 	font-size: 9px;
+	font-weight: normal;
 	margin: 2px 5px 2px 0;
 	color: var(--text-muted);
 	padding: 0px;
 	border: none;
 	line-height: 0 !important;
+	padding: 0;
+	border-radius: 3px !important;
 }
-.taskido .info .tag {
+.taskido .task .info .file {
+	color: var(--task-color);
+}
+.taskido .task .info .tag {
 	color: var(--tag-color) !important;
-	background-color: none !important;
-	background: none !important;
+	cursor: pointer;
 }
 .taskido .info .icon {
 	text-align: center;
@@ -296,6 +305,13 @@
 	background: none !important;
 	border-radius: 0 !important;
 }
+.taskido .quickEntryPanel select,
+.taskido .quickEntryPanel button {
+	cursor: pointer;
+}
+.taskido .quickEntryPanel input {
+	cursor: text;
+}
 .taskido .quickEntryPanel select {
 	height: 15px;
 	width: 100%;
@@ -307,7 +323,8 @@
 	margin: 2.5px 0 !important;
 	color: var(--text-muted);
 }
-.taskido .quickEntryPanel select:hover {
+.taskido .quickEntryPanel select:hover,
+.taskido .quickEntryPanel button:hover {
 	color: var(--text-normal);
 }
 .taskido .quickEntryPanel select option,
@@ -337,6 +354,7 @@
 	width: auto;
 	padding: 0 5px !important;
 	margin: 0 !important;
+	color: var(--text-muted);
 }
 .taskido .quickEntryPanel svg {
 	height: 15px;
