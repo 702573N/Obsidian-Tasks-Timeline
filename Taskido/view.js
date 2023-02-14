@@ -1,4 +1,4 @@
-let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, forward, dateFormat, options} = input;
+let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, forward, dateFormat, options, dailyNoteSection} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -355,7 +355,7 @@ function setEvents() {
 				var abstractFilePath = app.vault.getAbstractFileByPath(filePath);
 				if (abstractFilePath) {
 					app.vault.read(abstractFilePath).then(function(fileText) {
-						app.vault.modify(abstractFilePath, fileText + "\n" + "- [ ] " + newTask);
+						app.vault.modify(abstractFilePath, addNewTaskToDailyFile(fileText, newTask));
 					});
 				} else {
 					app.vault.create(filePath, "- [ ] " + newTask);
@@ -428,6 +428,36 @@ function setEvents() {
 		rootNode.querySelector('.quickEntryPanel').classList.remove("focus");
 	}));
 };
+
+/**
+ * 
+ * Returns a string with the newTask added under the line equal to dailyNoteSection, e.g. '## Tasks'
+ * If the line dailyNoteSection is not found, it appends the newTask at the end of fileText string
+ * 
+ */
+function addNewTaskToDailyFile(fileText, newTask) {
+	let newFileText;
+	const newTaskText = "- [ ] " + newTask;
+
+	if (dailyNoteSection != undefined) {
+		const lines = fileText.split("\n");
+		const index = lines.indexOf(dailyNoteSection);
+	
+		if (index != -1) {
+			lines.splice(index + 1, 0, newTaskText);
+			newFileText = lines.join("\n");
+
+			return newFileText;
+
+		} else {
+			new Notice('Section marker matching exactly: "' + dailyNoteSection + '" not found; appending at the end of file.');
+		}
+	}
+
+	newFileText = fileText + "\n" + newTaskText;
+
+	return newFileText;
+}
 
 function openFile(link, line, col) {
 	app.workspace.openLinkText('', link).then(() => {
