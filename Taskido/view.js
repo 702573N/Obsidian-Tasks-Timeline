@@ -10,7 +10,7 @@ if (!taskFiles) { taskFiles = [...new Set(dv.pages().file.map(f=>f.tasks.filter(
 if (!options) {options = ""};
 if (!dailyNoteFolder) {dailyNoteFolder = ""} else {dailyNoteFolder = dailyNoteFolder+"/"};
 if (!dailyNoteFormat) {dailyNoteFormat = "YYYY-MM-DD"};
-if (!taskOrder) {taskOrder = ["overdue", "due", "scheduled", "start", "process", "unplanned","done"]};
+if (!taskOrder) {taskOrder = ["overdue", "due", "scheduled", "start", "process", "unplanned","done","cancelled"]};
 if (!sort) {sort = "t=>t.order"};
 if (!dateFormat) {dateFormat = "ddd, MMM D"}; // "ddd, MMM D" // "MMMM D"
 if (!select) {select = "dailyNote"};
@@ -41,7 +41,8 @@ var repeatIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
 var priorityIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
 var fileIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>';
 var forwardIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>';
-var alertIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line stroke="#ff375f" x1="12" y1="8" x2="12" y2="12"/><line stroke="#ff375f" x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+var alertIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+var cancelledIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
 
 // Initialze
 getMeta(tasks);
@@ -66,7 +67,7 @@ function getMeta(tasks) {
 		// Daily Notes
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
 		var dailyTaskMatch = taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/);
-		if (dailyNoteMatch && tasks[i].completed == false) {
+		if (dailyNoteMatch && tasks[i].completed == false && tasks[i].checked == false) {
 			tasks[i].dailyNote = true;
 			if(!dailyTaskMatch) {
 				if (moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") < today) {
@@ -85,6 +86,10 @@ function getMeta(tasks) {
 					tasks[i].order = taskOrder.indexOf("unplanned");
 				};
 			};
+		} else if (dailyNoteMatch && tasks[i].completed == false && tasks[i].checked == true && moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") >= today) {
+			timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
+			happens["cancelled"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
+			tasks[i].order = taskOrder.indexOf("cancelled");
 		} else if (dailyNoteMatch) {
 			tasks[i].dailyNote = true;
 		} else if (!dailyNoteMatch) {
@@ -96,9 +101,9 @@ function getMeta(tasks) {
 			var inlineField = inlineFields[0];
 			var fieldKey = inlineFields[1].toLowerCase();
 			var fieldValue = inlineFields[2];
-			if ( fieldKey == "due" || fieldKey == "scheduled" || fieldKey == "start" || fieldKey == "completed") {
+			if ( fieldKey == "due" || fieldKey == "scheduled" || fieldKey == "start" || fieldKey == "completion") {
 				var fieldDate = moment(fieldValue).format("YYYY-MM-DD");
-				if (tasks[i].completed == false) {
+				if (tasks[i].completed == false  && tasks[i].checked == false) {
 					if ( fieldKey == "due" && fieldDate < today ) {
 						if (forward == true) {
 							happens["overdue"] = fieldDate;
@@ -136,11 +141,14 @@ function getMeta(tasks) {
 						tasks[i].order = taskOrder.indexOf("start");
 						timelineDates.push(fieldDate);
 					};
-				} else if (tasks[i].completed == true) {
+				} else if (tasks[i].completed == true && tasks[i].checked == true) {
 					if (fieldKey == "completion") {
 						happens["done"] = fieldDate;
 						tasks[i].order = taskOrder.indexOf("done");
 					};
+				} else if (tasks[i].completed == false && tasks[i].checked == true && fieldDate >= today) {
+						happens["cancelled"] = fieldDate;
+						tasks[i].order = taskOrder.indexOf("cancelled");	
 				};
 			};
 			tasks[i].text = tasks[i].text.replace(inlineField, "");
@@ -148,7 +156,7 @@ function getMeta(tasks) {
 		
 		// Tasks Plugin Tasks
 		var dueMatch = taskText.match(/📅 *(\d{4}-\d{2}-\d{2})/);
-		if (dueMatch && tasks[i].completed == false) {
+		if (dueMatch && tasks[i].completed == false && tasks[i].checked == false) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
 			if ( dueMatch[1] < today ) {
 				if (forward == true) {
@@ -169,11 +177,16 @@ function getMeta(tasks) {
 				tasks[i].order = taskOrder.indexOf("due");
 				timelineDates.push(dueMatch[1]);
 			};
-		} else if (dueMatch && tasks[i].completed == true) {
+		} else if (dueMatch && tasks[i].completed == true && tasks[i].checked == true) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
+		} else if (dueMatch && tasks[i].completed == false && tasks[i].checked == true && dueMatch[1] >= today) {
+			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
+			happens["cancelled"] = dueMatch[1];
+			tasks[i].order = taskOrder.indexOf("cancelled");
+			timelineDates.push(dueMatch[1]);
 		};
 		var scheduledMatch = taskText.match(/⏳ *(\d{4}-\d{2}-\d{2})/);
-		if (scheduledMatch && tasks[i].completed == false) {
+		if (scheduledMatch && tasks[i].completed == false && tasks[i].checked == false) {
 			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
 			if ( scheduledMatch[1] < today ) {
 				happens["scheduled"] = scheduledMatch[1];
@@ -188,7 +201,7 @@ function getMeta(tasks) {
 			tasks[i].text = tasks[i].text.replace(scheduledMatch[0], "");
 		};
 		var startMatch = taskText.match(/🛫 *(\d{4}-\d{2}-\d{2})/);
-		if (startMatch && tasks[i].completed == false) {
+		if (startMatch && tasks[i].completed == false && tasks[i].checked == false) {
 			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
 			if ( startMatch[1] < today ) {
 				happens["start"] = startMatch[1];
@@ -203,7 +216,7 @@ function getMeta(tasks) {
 			tasks[i].text = tasks[i].text.replace(startMatch[0], "");
 		};
 		var doneMatch = taskText.match(/✅ *(\d{4}-\d{2}-\d{2})/);
-		if (doneMatch && tasks[i].completed == true) {
+		if (doneMatch && tasks[i].completed == true && tasks[i].checked == true) {
 			tasks[i].text = tasks[i].text.replace(doneMatch[0], "");
 			if (done == true || doneMatch[1] == today) {
 				timelineDates.push(doneMatch[1]);
@@ -537,16 +550,16 @@ function getTimeline(tasks) {
 			var allCount = doneCount + todoCount + overdueCount;
 			
 			// Counter
-			var todayContent = "<div class='todayHeader'>Today</div>"
+			var todayContent = "<div class='todayHeader' aria-label='Focus today'>Today</div>"
 			todayContent += "<div class='counters'>"
-			todayContent += "<div class='counter' id='todo'><div class='count'>" + todoCount + "</div><div class='label'>To Do</div></div>"
-			todayContent += "<div class='counter' id='overdue'><div class='count'>" + overdueCount + "</div><div class='label'>Overdue</div></div>"
-			todayContent += "<div class='counter' id='unplanned'><div class='count'>" + unplannedCount + "</div><div class='label'>Unplanned</div></div>"
+			todayContent += "<div class='counter' id='todo' aria-label='Filter tasks to do'><div class='count'>" + todoCount + "</div><div class='label'>To Do</div></div>"
+			todayContent += "<div class='counter' id='overdue' aria-label='Filter overdue tasks'><div class='count'>" + overdueCount + "</div><div class='label'>Overdue</div></div>"
+			todayContent += "<div class='counter' id='unplanned' aria-label='Filter unplanned tasks'><div class='count'>" + unplannedCount + "</div><div class='label'>Unplanned</div></div>"
 			todayContent += "</div>"
 			// Quick Entry panel
 			todayContent += "<div class='quickEntryPanel'>"
-			todayContent += "<div class='left'><select class='fileSelect'></select><input class='newTask' type='text' placeholder='Enter your tasks here'/></div>"
-			todayContent += "<div class='right'><button class='ok'>"
+			todayContent += "<div class='left'><select class='fileSelect' aria-label='Select a note to add a new task to'></select><input class='newTask' type='text' placeholder='Enter your tasks here'/></div>"
+			todayContent += "<div class='right'><button class='ok' aria-label='Append new task to selected note'>"
 			todayContent += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg>'
 			todayContent += "</button></div>"
 			todayContent += "</div>"
@@ -578,19 +591,19 @@ function getTimeline(tasks) {
 				
 				// Append relative infos
 				if (!key.includes("Forward") && key != "unplanned") {
-					info += "<div class='relative'><div class='icon'>" + eval(key+"Icon") +  "</div><div class='label'>" + relative + "</div></div>";
+					info += "<div class='relative' aria-label='" + cls + ": " + value + "'><div class='icon'>" + eval(key+"Icon") +  "</div><div class='label'>" + relative + "</div></div>";
 				};
 			};
 
 			if (item.repeat) {
-				info += "<div class='repeat'><div class='icon'>" + repeatIcon + "</div><div class='label'>" + item.repeat.replace("🔁", "") + "</div></div>";
+				info += "<div class='repeat' aria-label=''><div class='icon'>" + repeatIcon + "</div><div class='label'>" + item.repeat.replace("🔁", "") + "</div></div>";
 			};
 			
 			if (item.priorityLabel) {
-				info += "<div class='priority'><div class='icon'>" + priorityIcon + "</div><div class='label'>" + item.priorityLabel + "</div></div>";
+				info += "<div class='priority' aria-label=''><div class='icon'>" + priorityIcon + "</div><div class='label'>" + item.priorityLabel + "</div></div>";
 			};
 			
-			info += "<div class='file'><div class='icon'>" + fileIcon + "</div><div class='label'>" + file + "</div></div>";
+			info += "<div class='file' aria-label='" + item.path + "'><div class='icon'>" + fileIcon + "</div><div class='label'>" + file + "</div></div>";
 			
 			item.tags.forEach(function(tag) {
 				var tagText = tag.replace("#","");
@@ -601,13 +614,13 @@ function getTimeline(tasks) {
 				} else {
 					var style = "style='--tag-color:var(--text-muted)'";
 				};
-				info += "<a href='" + tag + "' class='tag' " + style + "><div class='icon'>" + tagIcon + "</div><div class='label'>" + tagText + "</div></a>";
+				info += "<a href='" + tag + "' class='tag' " + style + " aria-label='#" + tagText + "'><div class='icon'>" + tagIcon + "</div><div class='label'>" + tagText + "</div></a>";
 				text = text.replace(tag, "");
 			});
 			
 			if (item.completed) { var icon = doneIcon } else { var icon = taskIcon };
-			if (cls == "overdue") { var icon = alertIcon };
-			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' data-dailynote='" + dailyNote + "' class='task " + cls + "' style='--task-color:" + color + "' title='" + file + "'><div class='timeline'><div class='icon'>" + icon + "</div><div class='stripe'></div></div><div class='lines'><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a><div class='line info'>" + info + "</div></div></div>";
+			if (cls == "overdue") { var icon = alertIcon } else if (cls == "cancelled") { var icon = cancelledIcon };
+			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' data-dailynote='" + dailyNote + "' class='task " + cls + "' style='--task-color:" + color + "' aria-label='" + file + "'><div class='timeline'><div class='icon'>" + icon + "</div><div class='stripe'></div></div><div class='lines'><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a><div class='line info'>" + info + "</div></div></div>";
 			content += task;
 		});
 		
