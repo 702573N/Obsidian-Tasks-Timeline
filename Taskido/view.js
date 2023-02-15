@@ -358,10 +358,11 @@ function setEvents() {
 				if (abstractFilePath) {
 					app.vault.read(abstractFilePath).then(function(fileText) {
 						app.vault.modify(abstractFilePath, addNewTask(fileText, newTask));
-						new Notice("New task saved!")
+						new Notice("New task saved!");
 					});
 				} else {
-					app.fileManager.createNewMarkdownFile(app.vault.getRoot(), filePath.slice(0, -3))
+					console.log(filePath.replace(/\.[^/.]+$/, ""));
+					app.fileManager.createNewMarkdownFile(app.vault.getRoot(), filePath.replace(/\.[^/.]+$/, ""))
 						.then(function (newFile) {
 							/**
 							 * start timer to allow plugins (like templater) to populate the text in the new file
@@ -369,13 +370,13 @@ function setEvents() {
 							setTimeout(function () {
 								app.vault.read(newFile).then(function(fileText) {
 									app.vault.modify(newFile, addNewTask(fileText, newTask));
-									new Notice("New task saved!")
+									new Notice("New task saved!");
 								});
 							}, WAIT_AFTER_CREATION_FOR_TEMPLATES_MS);
 						});				
 				}
 				rootNode.querySelector('.newTask').value = "";
-				rootNode.querySelector('.newTask').blur();
+				rootNode.querySelector('.newTask').focus();
 			} catch(err) {
 				new Notice("Something went wrong!");
 			};
