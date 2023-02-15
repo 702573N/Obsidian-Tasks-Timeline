@@ -1,4 +1,4 @@
-let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, forward, dateFormat, options, dailyNoteSection} = input;
+let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, forward, dateFormat, options, section} = input;
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -12,7 +12,7 @@ if (!dailyNoteFolder) {dailyNoteFolder = ""} else {dailyNoteFolder = dailyNoteFo
 if (!dailyNoteFormat) {dailyNoteFormat = "YYYY-MM-DD"};
 if (!taskOrder) {taskOrder = ["overdue", "due", "scheduled", "start", "process", "unplanned","done","cancelled"]};
 if (!sort) {sort = "t=>t.order"};
-if (!dateFormat) {dateFormat = "ddd, MMM D"}; // "ddd, MMM D" // "MMMM D"
+if (!dateFormat) {dateFormat = "ddd, MMM D"};
 if (!select) {select = "dailyNote"};
 
 // Variables
@@ -355,16 +355,16 @@ function setEvents() {
 				var abstractFilePath = app.vault.getAbstractFileByPath(filePath);
 				if (abstractFilePath) {
 					app.vault.read(abstractFilePath).then(function(fileText) {
-						app.vault.modify(abstractFilePath, addNewTaskToDailyFile(fileText, newTask));
+						app.vault.modify(abstractFilePath, addNewTask(fileText, newTask));
 					});
 				} else {
 					app.vault.create(filePath, "- [ ] " + newTask);
 				};
 				rootNode.querySelector('.newTask').value = "";
 				rootNode.querySelector('.newTask').blur();
-				new Notice("New task saved!")
+				new Notice("New task saved!");
 			} catch(err) {
-				new Notice("Something went wrong!")
+				new Notice("Something went wrong!");
 			};
 		} else {
 			rootNode.querySelector('.newTask').focus();
@@ -429,35 +429,23 @@ function setEvents() {
 	}));
 };
 
-/**
- * 
- * Returns a string with the newTask added under the line equal to dailyNoteSection, e.g. '## Tasks'
- * If the line dailyNoteSection is not found, it appends the newTask at the end of fileText string
- * 
- */
-function addNewTaskToDailyFile(fileText, newTask) {
+function addNewTask(fileText, newTask) {
 	let newFileText;
 	const newTaskText = "- [ ] " + newTask;
-
-	if (dailyNoteSection != undefined) {
+	if (section != undefined) {
 		const lines = fileText.split("\n");
-		const index = lines.indexOf(dailyNoteSection);
-	
+		const index = lines.indexOf(section);
 		if (index != -1) {
 			lines.splice(index + 1, 0, newTaskText);
 			newFileText = lines.join("\n");
-
 			return newFileText;
-
 		} else {
-			new Notice('Section marker matching exactly: "' + dailyNoteSection + '" not found; appending at the end of file.');
-		}
-	}
-
-	newFileText = fileText + "\n" + newTaskText;
-
+			new Notice('Section marker matching exactly: "' + section + '" not found; appending at the end of file.');
+		};
+	};
+	newFileText = fileText.replace(/\n+$/gm, "") + "\n" + newTaskText;
 	return newFileText;
-}
+};
 
 function openFile(link, line, col) {
 	app.workspace.openLinkText('', link).then(() => {
@@ -666,4 +654,4 @@ function getTimeline(tasks) {
 		yearNode.setAttribute("data-types", containedTypesPerYear);
 	};
 	
-};
+	};
