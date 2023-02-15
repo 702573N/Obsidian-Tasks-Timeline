@@ -138,11 +138,11 @@ dailyNoteFormat: "YYYY-[W]ww"
 ```
 You can set a custom format with a limited base set of characters: Y M D [W] ww d . , - : (SPACE). Without this parameter the default format "YYYY-MM-DD" is used to identify your daily notes.
 
-### dailyNoteSection:
+### section:
 ```
-dailyNoteSection: "## Tasks"
+section: "## Tasks"
 ```
-You can set the section within the daily notes file to append new tasks. The example above will append tasks in your daily notes file under the section `## Tasks`.  The match should be exact. Without this parameter, new tasks are appended at the end of the file.
+You can set the section within the notes file to append new tasks. The example above will append tasks in your notes under the section `## Tasks`.  The match should be exact. Without this parameter, new tasks are appended at the end of the file.
 
 ### globalTaskFilter:
 ```
