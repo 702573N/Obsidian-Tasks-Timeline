@@ -360,9 +360,9 @@ function setEvents() {
 				} else {
 					app.vault.create(filePath, "- [ ] " + newTask);
 				};
-				rootNode.querySelector('.newTask').value = "";
-				rootNode.querySelector('.newTask').blur();
 				new Notice("New task saved!");
+				rootNode.querySelector('.newTask').value = "";
+				rootNode.querySelector('.newTask').focus();
 			} catch(err) {
 				new Notice("Something went wrong!");
 			};
@@ -440,10 +440,14 @@ function addNewTask(fileText, newTask) {
 			newFileText = lines.join("\n");
 			return newFileText;
 		} else {
-			new Notice('Section marker matching exactly: "' + section + '" not found; appending at the end of file.');
+			var createSection = confirm("Section marker '" + section + "' not found. Would you like to create it?");
+			if (createSection == true) {
+				newFileText = fileText.replace(/\n+$/, "") + "\n\n" + section + "\n\n" + newTaskText;
+				return newFileText;
+			};
 		};
 	};
-	newFileText = fileText.replace(/\n+$/gm, "") + "\n" + newTaskText;
+	newFileText = fileText.replace(/\n+$/, "") + "\n" + newTaskText;
 	return newFileText;
 };
 
