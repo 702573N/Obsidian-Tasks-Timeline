@@ -237,7 +237,7 @@
 	color: var(--text-muted);
 	padding: 0px;
 	border: none;
-	line-height: 0 !important;
+	line-height: 1 !important;
 	padding: 0;
 	border-radius: 3px !important;
 }
@@ -246,6 +246,7 @@
 }
 .taskido .task .info .tag {
 	color: var(--tag-color) !important;
+	background: none !important;
 	cursor: pointer;
 }
 .taskido .info .icon {
@@ -369,7 +370,9 @@
 	transition: none !important;
 }
 /* Classes */
-.taskido.todayFocus .todayHeader,
+.taskido.todayFocus .todayHeader {
+	color: var(--interactive-accent);
+}
 .taskido.todoFocus .counter#todo,
 .taskido.todoFilter .counter#todo,
 .taskido.overdueFocus .counter#overdue,
@@ -381,6 +384,7 @@
 .taskido.noTag .tag,
 .taskido.noPriority .priority,
 .taskido.noFile .task .file,
+.taskido.noHeader .task .header,
 .taskido.noFile .task .info > .file,
 .taskido.noInfo .task .line:nth-child(2),
 .taskido.noDone .year[data-types="done"],
