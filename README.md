@@ -99,6 +99,7 @@ options: "noRepeat"
 options: "noPriority"
 options: "noTag"
 options: "noFile"
+options: "noHeader"
 options: "noInfo"
 options: "noDone"
 ```
