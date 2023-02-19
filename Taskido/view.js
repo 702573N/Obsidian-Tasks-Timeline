@@ -461,7 +461,7 @@ function addNewTask(fileText, newTask) {
 			};
 		};
 	};
-	newFileText = fileText.replace(/\n+$/, "") + "\n" + newTaskText;
+	newFileText = fileText.replace(/\n+$/, "") + "\n\n" + newTaskText;
 	return newFileText;
 };
 
@@ -606,7 +606,6 @@ function getTimeline(tasks) {
 		tasksFiltered.forEach(function(item) {
 			var file = getFilename(item.path);
 			var header = item.header.subpath;
-			if (header && header != file) {file += " > " + header};
 			var link = item.link.path.replace("'", "&apos;");
 			var text = item.text;
 			var posEndLine = item.position.start.line;
@@ -639,7 +638,7 @@ function getTimeline(tasks) {
 				info += "<div class='priority' aria-label=''><div class='icon'>" + priorityIcon + "</div><div class='label'>" + item.priorityLabel + "</div></div>";
 			};
 			
-			info += "<div class='file' aria-label='" + item.path + "'><div class='icon'>" + fileIcon + "</div><div class='label'>" + file + "</div></div>";
+			info += "<div class='file' aria-label='" + item.path + "'><div class='icon'>" + fileIcon + "</div><div class='label'>" + file + "<span class='header'> > " + header + "</span></div></div>";
 			
 			item.tags.forEach(function(tag) {
 				var tagText = tag.replace("#","");
