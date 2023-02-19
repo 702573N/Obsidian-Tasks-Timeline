@@ -134,14 +134,9 @@
 	align-items: center;
 	flex-shrink: 1;
 	flex-grow: 1;
-	margin: 0;
-}
-.taskido .stripe:after {
-	content: "";
-	height: 100%;
-	width: 0.5px;
+	margin: 0 auto;
+	width: 1px;
 	background: var(--checkbox-border-color);
-	margin: 5px 0;
 }
 .taskido .task.overdue .timeline .icon svg line {
 	stroke: #ff375f !important;
