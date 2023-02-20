@@ -1,5 +1,7 @@
 let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, forward, dateFormat, options, section} = input;
 
+const WAIT_AFTER_CREATION_FOR_TEMPLATES_MS = 1000;
+
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
 if (dailyNoteFormat) { if (dailyNoteFormat.match(/[|\\YMDWwd.,-: \[\]]/g).length != dailyNoteFormat.length) { dv.span('> [!ERROR] The `dailyNoteFormat` contains invalid characters'); return false }};
@@ -356,11 +358,23 @@ function setEvents() {
 				if (abstractFilePath) {
 					app.vault.read(abstractFilePath).then(function(fileText) {
 						app.vault.modify(abstractFilePath, addNewTask(fileText, newTask));
+						new Notice("New task saved!");
 					});
 				} else {
-					app.vault.create(filePath, "- [ ] " + newTask);
-				};
-				new Notice("New task saved!");
+					console.log(filePath.replace(/\.[^/.]+$/, ""));
+					app.fileManager.createNewMarkdownFile(app.vault.getRoot(), filePath.replace(/\.[^/.]+$/, ""))
+						.then(function (newFile) {
+							/**
+							 * start timer to allow plugins (like templater) to populate the text in the new file
+							 */
+							setTimeout(function () {
+								app.vault.read(newFile).then(function(fileText) {
+									app.vault.modify(newFile, addNewTask(fileText, newTask));
+									new Notice("New task saved!");
+								});
+							}, WAIT_AFTER_CREATION_FOR_TEMPLATES_MS);
+						});				
+				}
 				rootNode.querySelector('.newTask').value = "";
 				rootNode.querySelector('.newTask').focus();
 			} catch(err) {
