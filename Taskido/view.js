@@ -229,6 +229,11 @@ function getMeta(tasks) {
 			tasks[i].repeat = repeatMatch[1];
 			tasks[i].text = tasks[i].text.replace(repeatMatch[0], "");
 		};
+		var createdMatch = taskText.match(/➕ *(\d{4}-\d{2}-\d{2})/);
+		if (createdMatch) {
+			tasks[i].created = createdMatch[1];
+			tasks[i].text = tasks[i].text.replace(createdMatch[0], "");
+		};
 		var lowMatch = taskText.includes("🔽");
 		if (lowMatch) {
 			tasks[i].text = tasks[i].text.replace("🔽","");
