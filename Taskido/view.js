@@ -436,7 +436,11 @@ function addNewTask(fileText, newTask) {
 		const lines = fileText.split("\n");
 		const index = lines.indexOf(section);
 		if (index != -1) {
-			lines.splice(index + 1, 0, newTaskText);
+			if (lines[index + 1] == "") {
+				lines.splice(index + 2, 0, newTaskText);
+			} else {
+				lines.splice(index + 1, 0, newTaskText);
+			}
 			newFileText = lines.join("\n");
 			return newFileText;
 		} else {
