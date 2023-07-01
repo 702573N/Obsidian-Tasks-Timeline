@@ -288,6 +288,11 @@ function getMeta(tasks) {
 			timelineDates.push(KanbanMatch[1]);
 		};
 
+		// Kanban Time Detection
+		var kanbanTime = taskText.match(/\@\@\{ *(\d{1,2}:\d{2}) *([AaPp][Mm])\}|\@\@\{ (\d{1,2}:\d{2}\})/);
+		if (kanbanTime) {
+			tasks[i].text = tasks[i].text.replace("@@{", "at ").replace("}", "");
+		};
 
 		// Link Detection
 		while (outerLink = /\[([^\]]+)\]\(([^)]+)\)/g.exec(tasks[i].text)) {
@@ -303,7 +308,7 @@ function getMeta(tasks) {
 			tasks[i].text = tasks[i].text.replace(mark[0], "<mark>" + mark[1] + "</mark>");
 		};
 		
-		// Reminder Syntax
+		// Reminder Syntax 
 		var reminderMatch = taskText.match(/⏰ *(\d{4}-\d{2}-\d{2}) *(\d{2}\:\d{2})|⏰ *(\d{4}-\d{2}-\d{2})|(\(\@(\d{4}-\d{2}-\d{2}) *(\d{2}\:\d{2})\))|(\(\@(\d{4}-\d{2}-\d{2})\))/);
 		if (reminderMatch) {
 			tasks[i].text = tasks[i].text.replace(reminderMatch[0], "");
