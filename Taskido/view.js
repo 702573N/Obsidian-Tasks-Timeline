@@ -322,11 +322,6 @@ function getMeta(tasks) {
 
 function getRelative(someDate) {
 	let date = moment(someDate);
-	/*if (moment().diff(date, 'days') >= 1 || moment().diff(date, 'days') <= -1) {
-		return date.fromNow();
-	} else {
-		return date.calendar().split(' ')[0];
-	};*/
 	return date.calendar(null,{
     lastDay : '[Yesterday]',
     sameDay : '[Today]',
