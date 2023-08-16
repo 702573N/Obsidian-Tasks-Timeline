@@ -10,7 +10,7 @@ This fork has 2 main goals:
 ---
 
 ## Kanban Support
-This fork adds support for Kanban date format: `@{2023-12-25}` as well as cleaning up Kanban cards that appear on the timeline. Previously that time would display on the timeline as "@@{1:00 PM}", this has been tweaked to simply display as "@ 1:00PM".
+This fork adds support for Kanban date format: `@{2023-12-25}` as well as cleaning up Kanban cards that appear on the timeline. Previously that time would display on the timeline as "@@{1:00 PM}", this has been tweaked to simply display as "at 1:00PM".
 
 ---
 
