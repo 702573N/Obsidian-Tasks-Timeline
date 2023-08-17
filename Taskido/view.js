@@ -1,4 +1,17 @@
+
 let {pages, inbox, select, taskOrder, taskFiles, globalTaskFilter, dailyNoteFolder, dailyNoteFormat, done, sort, css, forward, dateFormat, options, section} = input;
+
+
+// dataview required
+const jsonString = await dv.io.load("tag-color-mappings.json");
+var tagColorMapping = {};
+try {
+	tagColorMapping = JSON.parse(jsonString);
+} catch(error) {
+	console.info("error caused, ignore the tag color mapping.", error);
+}
+
+
 
 // Error Handling
 if (!pages && pages!="") { dv.span('> [!ERROR] Missing pages parameter\n> \n> Please set the pages parameter like\n> \n> `pages: ""`'); return false };
@@ -153,6 +166,8 @@ function getMeta(tasks) {
 			};
 			tasks[i].text = tasks[i].text.replace(inlineField, "");
 		};
+
+		//console.log(`[${tasks[i].text}], [${tasks[i].status.name}]`);
 		
 		// Tasks Plugin Tasks
 		var dueMatch = taskText.match(/📅 *(\d{4}-\d{2}-\d{2})/);
@@ -539,6 +554,10 @@ function getTimeline(tasks) {
 		
 		// Variables
 		var tasksFiltered = tasks.filter(t=>Object.values(t.happens).includes(timelineDates[i].toString())).sort(eval(sort));
+
+		//console.info(tasksFiltered);
+
+
 		var date = moment(timelineDates[i].toString()).format(dateFormat);
 		var weekday = moment(timelineDates[i].toString()).format("dddd");
 		var year = moment(timelineDates[i].toString()).format("YYYY");
@@ -577,6 +596,7 @@ function getTimeline(tasks) {
 			todayContent += "<div class='counter' id='todo' aria-label='Filter tasks to do'><div class='count'>" + todoCount + "</div><div class='label'>To Do</div></div>"
 			todayContent += "<div class='counter' id='overdue' aria-label='Filter overdue tasks'><div class='count'>" + overdueCount + "</div><div class='label'>Overdue</div></div>"
 			todayContent += "<div class='counter' id='unplanned' aria-label='Filter unplanned tasks'><div class='count'>" + unplannedCount + "</div><div class='label'>Unplanned</div></div>"
+			// TODO
 			todayContent += "</div>"
 			// Quick Entry panel
 			todayContent += "<div class='quickEntryPanel'>"
@@ -629,9 +649,12 @@ function getTimeline(tasks) {
 			item.tags.forEach(function(tag) {
 				var tagText = tag.replace("#","");
 				var hexColorMatch = tag.match(/([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\/(.*)/);
+				var tagColor = getMatchedTagColor(tagText);
 				if (hexColorMatch) {
 					var style = "style='--tag-color:#" + hexColorMatch[1] + ";--tag-background:#" + hexColorMatch[1] + "1a'";
 					tagText = hexColorMatch[2];
+				} else if (tagColor) {
+					var style = "style='--tag-color:" + tagColor + ";--tag-background:" + tagColor + "1a'";
 				} else {
 					var style = "style='--tag-color:var(--text-muted)'";
 				};
@@ -639,6 +662,7 @@ function getTimeline(tasks) {
 				text = text.replace(tag, "");
 			});
 			
+			// console.log(`item [${item.text}], [${item.completed}], [${cls}]`);
 			if (item.completed) { var icon = doneIcon } else { var icon = taskIcon };
 			if (cls == "overdue") { var icon = alertIcon } else if (cls == "cancelled") { var icon = cancelledIcon };
 			var task = "<div data-line='" + posEndLine + "' data-col='" + posEndCol + "' data-link='" + link + "' data-dailynote='" + dailyNote + "' class='task " + cls + "' style='--task-color:" + color + "' aria-label='" + file + "'><div class='timeline'><div class='icon'>" + icon + "</div><div class='stripe'></div></div><div class='lines'><a class='internal-link' href='" + link + "'><div class='content'>" + text + "</div></a><div class='line info'>" + info + "</div></div></div>";
@@ -657,4 +681,13 @@ function getTimeline(tasks) {
 		yearNode.setAttribute("data-types", containedTypesPerYear);
 	};
 	
-	};
+};
+
+function getMatchedTagColor(tag) {
+	let idx = tag.lastIndexOf("/");
+	if (-1 == idx || tagColorMapping[tag]) {
+		return tagColorMapping[tag];
+	} else {
+		return getMatchedTagColor(tag.substring(0, idx));
+	}
+};
