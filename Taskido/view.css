@@ -153,12 +153,10 @@
 	stroke: var(--checkbox-marker-color) !important;
 	stroke-width: 2.5px;
 }
-.taskido .task.done .info .tag,
 .taskido .task.done .info .repeat,
 .taskido .task.done .info .priority,
 .taskido .task.done .info .relative,
 .taskido .task.done .info .file,
-.taskido .task.cancelled .info .tag,
 .taskido .task.cancelled .info .repeat,
 .taskido .task.cancelled .info .priority,
 .taskido .task.cancelled .info .relative,
@@ -239,7 +237,9 @@
 .taskido .task .info .file {
 	color: var(--task-color);
 }
-.taskido .task .info .tag {
+.taskido .task .info .tag,
+.taskido .task.done .info .tag,
+.taskido .task.cancelled .info .tag {
 	color: var(--tag-color) !important;
 	background: none !important;
 	cursor: pointer;
