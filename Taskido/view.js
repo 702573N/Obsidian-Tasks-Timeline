@@ -580,7 +580,7 @@ function getTimeline(tasks) {
 			todayContent += "</div>"
 			// Quick Entry panel
 			todayContent += "<div class='quickEntryPanel'>"
-			todayContent += "<div class='left'><select class='fileSelect' aria-label='Select a note to add a new task to'></select><input class='newTask' type='text' placeholder='Enter your tasks here'/></div>"
+			todayContent += "<div class='left'><select class='fileSelect' aria-label='Select a note to add a new task to'></select><input id='addTaskInput' class='newTask' type='text' placeholder='Enter your tasks here'/></div>"
 			todayContent += "<div class='right'><button class='ok' aria-label='Append new task to selected note'>"
 			todayContent += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path></svg>'
 			todayContent += "</button></div>"
@@ -655,6 +655,9 @@ function getTimeline(tasks) {
 		// Set containedTypesPerYear
 		containedTypesPerYear = [...new Set(containedTypesPerYear)].sort()
 		yearNode.setAttribute("data-types", containedTypesPerYear);
+
+		// Set Autofocus On newTask
+		document.getElementById("addTaskInput").focus();
 	};
 	
 	};
