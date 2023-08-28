@@ -213,7 +213,7 @@
 	white-space: break-word;
 	font-size: 15px;
 	font-weight: normal;
-	color: var(--text-normal);
+	color: var(--task-color);
 	line-height: 22px;
 }
 .taskido .task .info .tag,
@@ -236,7 +236,7 @@
 	padding: 0;
 	border-radius: 3px !important;
 }
-.taskido .task .info .file {
+.taskido .task .info .file{
 	color: var(--task-color);
 }
 .taskido .task .info .tag {

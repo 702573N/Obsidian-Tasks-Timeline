@@ -256,6 +256,44 @@ function getMeta(tasks) {
 			tasks[i].text = tasks[i].text.replaceAll("#task","");
 		};
 
+		//Kanban Detection
+		var KanbanMatch = taskText.match(/\@{*(\d{4}-\d{2}-\d{2})}/);
+		if (KanbanMatch && tasks[i].completed == false && tasks[i].checked == false) {
+			tasks[i].text = tasks[i].text.replace(KanbanMatch[0], "");
+			if ( KanbanMatch[1] < today ) {
+				if (forward == true) {
+					happens["overdue"] = KanbanMatch[1];
+					happens["overdueForward"] = today;
+					tasks[i].order = taskOrder.indexOf("overdue");
+				} else {
+					happens["overdue"] = KanbanMatch[1];
+					tasks[i].order = taskOrder.indexOf("overdue");
+					timelineDates.push(KanbanMatch[1]);
+				};
+			} else if ( KanbanMatch[1] == today ) {
+				happens["due"] = KanbanMatch[1];
+				tasks[i].order = taskOrder.indexOf("due");
+				timelineDates.push(KanbanMatch[1]);
+			} else if ( KanbanMatch[1] > moment().format("YYYY-MM-DD") ) {
+				happens["due"] = KanbanMatch[1];
+				tasks[i].order = taskOrder.indexOf("due");
+				timelineDates.push(KanbanMatch[1]);
+			};
+		} else if (KanbanMatch && tasks[i].completed == true && tasks[i].checked == true) {
+			tasks[i].text = tasks[i].text.replace(KanbanMatch[0], "");
+		} else if (KanbanMatch && tasks[i].completed == false && tasks[i].checked == true && KanbanMatch[1] >= today) {
+			tasks[i].text = tasks[i].text.replace(KanbanMatch[0], "");
+			happens["cancelled"] = KanbanMatch[1];
+			tasks[i].order = taskOrder.indexOf("cancelled");
+			timelineDates.push(KanbanMatch[1]);
+		};
+
+		// Kanban Time Detection
+		var kanbanTime = taskText.match(/\@\@\{ *(\d{1,2}:\d{2}) *([AaPp][Mm])\}|\@\@\{ (\d{1,2}:\d{2}\})/);
+		if (kanbanTime) {
+			tasks[i].text = tasks[i].text.replace("@@{", "at ").replace("}", "");
+		};
+
 		// Link Detection
 		while (outerLink = /\[([^\]]+)\]\(([^)]+)\)/g.exec(tasks[i].text)) {
  			tasks[i].text = tasks[i].text.replace(outerLink[0], "<a class='external-link outerLink' href='" + outerLink[2] + "'>" + outerLink[1] + "</a>");
@@ -270,7 +308,7 @@ function getMeta(tasks) {
 			tasks[i].text = tasks[i].text.replace(mark[0], "<mark>" + mark[1] + "</mark>");
 		};
 		
-		// Reminder Syntax
+		// Reminder Syntax 
 		var reminderMatch = taskText.match(/⏰ *(\d{4}-\d{2}-\d{2}) *(\d{2}\:\d{2})|⏰ *(\d{4}-\d{2}-\d{2})|(\(\@(\d{4}-\d{2}-\d{2}) *(\d{2}\:\d{2})\))|(\(\@(\d{4}-\d{2}-\d{2})\))/);
 		if (reminderMatch) {
 			tasks[i].text = tasks[i].text.replace(reminderMatch[0], "");
@@ -284,11 +322,14 @@ function getMeta(tasks) {
 
 function getRelative(someDate) {
 	let date = moment(someDate);
-	if (moment().diff(date, 'days') >= 1 || moment().diff(date, 'days') <= -1) {
-		return date.fromNow();
-	} else {
-		return date.calendar().split(' ')[0];
-	};
+	return date.calendar(null,{
+    lastDay : '[Yesterday]',
+    sameDay : '[Today]',
+    nextDay : '[Tomorrow]',
+    lastWeek : '[last] dddd',
+    nextWeek : 'dddd',
+    sameElse : 'L'
+	});
 };
 
 function getSelectOptions() {
