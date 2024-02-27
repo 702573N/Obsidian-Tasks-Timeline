@@ -67,7 +67,7 @@ function getMeta(tasks) {
 		// Daily Notes
 		var dailyNoteMatch = taskFile.match(eval(dailyNoteRegEx));
 		var dailyTaskMatch = taskText.match(/[🛫|⏳|📅|✅] *(\d{4}-\d{2}-\d{2})/);
-		if (dailyNoteMatch && tasks[i].completed == false && tasks[i].checked == false) {
+		if (dailyNoteMatch && tasks[i].completed == false && tasks[i].status != "-") {
 			tasks[i].dailyNote = true;
 			if(!dailyTaskMatch) {
 				if (moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") < today) {
@@ -86,7 +86,7 @@ function getMeta(tasks) {
 					tasks[i].order = taskOrder.indexOf("unplanned");
 				};
 			};
-		} else if (dailyNoteMatch && tasks[i].completed == false && tasks[i].checked == true && moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") >= today) {
+		} else if (dailyNoteMatch && tasks[i].completed == false && tasks[i].status == "-" && moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD") >= today) {
 			timelineDates.push(moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD"));
 			happens["cancelled"] = moment(dailyNoteMatch[1], dailyNoteFormat).format("YYYY-MM-DD");
 			tasks[i].order = taskOrder.indexOf("cancelled");
@@ -103,7 +103,7 @@ function getMeta(tasks) {
 			var fieldValue = inlineFields[2];
 			if ( fieldKey == "due" || fieldKey == "scheduled" || fieldKey == "start" || fieldKey == "completion") {
 				var fieldDate = moment(fieldValue).format("YYYY-MM-DD");
-				if (tasks[i].completed == false  && tasks[i].checked == false) {
+				if (tasks[i].completed == false  && tasks[i].status != "-") {
 					if ( fieldKey == "due" && fieldDate < today ) {
 						if (forward == true) {
 							happens["overdue"] = fieldDate;
@@ -141,12 +141,12 @@ function getMeta(tasks) {
 						tasks[i].order = taskOrder.indexOf("start");
 						timelineDates.push(fieldDate);
 					};
-				} else if (tasks[i].completed == true && tasks[i].checked == true) {
+				} else if (tasks[i].completed == true) {
 					if (fieldKey == "completion") {
 						happens["done"] = fieldDate;
 						tasks[i].order = taskOrder.indexOf("done");
 					};
-				} else if (tasks[i].completed == false && tasks[i].checked == true && fieldDate >= today) {
+				} else if (tasks[i].completed == false && tasks[i].status == "-" && fieldDate >= today) {
 						happens["cancelled"] = fieldDate;
 						tasks[i].order = taskOrder.indexOf("cancelled");	
 				};
@@ -156,7 +156,7 @@ function getMeta(tasks) {
 		
 		// Tasks Plugin Tasks
 		var dueMatch = taskText.match(/📅 *(\d{4}-\d{2}-\d{2})/);
-		if (dueMatch && tasks[i].completed == false && tasks[i].checked == false) {
+		if (dueMatch && tasks[i].completed == false && tasks[i].status != "-") {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
 			if ( dueMatch[1] < today ) {
 				if (forward == true) {
@@ -179,7 +179,7 @@ function getMeta(tasks) {
 			};
 		} else if (dueMatch && tasks[i].completed == true && tasks[i].checked == true) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
-		} else if (dueMatch && tasks[i].completed == false && tasks[i].checked == true && dueMatch[1] >= today) {
+		} else if (dueMatch && tasks[i].completed == false && tasks[i].status == "-" && dueMatch[1] >= today) {
 			tasks[i].text = tasks[i].text.replace(dueMatch[0], "");
 			happens["cancelled"] = dueMatch[1];
 			tasks[i].order = taskOrder.indexOf("cancelled");
